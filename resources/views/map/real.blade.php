@@ -160,7 +160,7 @@
             </div>
         </div>
         <div id="grid" class="col-md-12" style="pointer-events: none;"></div>
-        <div id="map" class="col-md-12" style="height: 860px; background-color: green">
+        <div id="map" class="col-md-12" style="height: 860px;">
             <form id="download_form" class="form-horizontal" role="form" method="POST" action="{{ route('map.download') }}">
                 {{ csrf_field() }}    
                 <input type="hidden" id="type" name="type">
