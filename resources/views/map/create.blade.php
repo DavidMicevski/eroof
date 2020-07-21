@@ -38,15 +38,24 @@
                     <div class="col-md-12" id="google-map" style="height: 245px">
                     </div>
                     <div id="scale" style="display: none;">
-                        <div id="scale-value">
-
-                        </div>
-                        <div id="scale-bar">
-
-                        </div>
+                        <div id="scale-value"></div>
+                        <div id="scale-bar"></div>
                     </div>
                 </div>
                 <div class="col-md-5">
+                    <p style="margin-top: 15px">Switch Providers</p>
+                    <div class="col-md-12" style="background-color: #f8f8f8">
+                        <select>
+                            <option style="background-image:url(&quot;../../../bower_components/AdminLTE/dist/img/google.png&quot;);">GoogleMap</option>
+                            <option style="background-image:url(&quot;../../../bower_components/AdminLTE/dist/img/nearmap.png&quot;);">NearMap</option>
+                        </select> 
+                    </div>
+                    <p style="margin-top: 15px">Zoom</p>
+                    <div class="col-md-11">
+                        <input id="range" type="range" min="13" max="20" value="13">
+                        <a href="#" id="minus" style="float: left;" onclick="zoomout()"><i class="fa fa-search-minus"></i></a>
+                        <a href="#" id="plus" style="float: right;" onclick="zoomin()"><i class="fa fa-search-plus"></i></a>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -238,7 +247,7 @@
                     position: google.maps.ControlPosition.TOP_RIGHT
                 },
                 gestureHandling: 'greedy',
-                zoom: 20
+                zoom: 13
             });
 
             coordinate = google_lat + ',' + google_lng + "," + google_map.getZoom() + "";
@@ -266,14 +275,6 @@
             google.maps.event.addListener(google_map, 'idle', makeScaleGoogle);
         });
     });
-
-    function measure() {
-        $("#form").submit();
-    }
-
-    function measureModalClose() {
-        measureModal.style.display = "none";
-    }
 
     $("#form").on("keypress", function (event) { 
         var keyPressed = event.keyCode || event.which; 
@@ -312,6 +313,47 @@
         $("#coordinate").val(coordinate);
         $("#coordinate1").val(coordinate);
     }
+
+    function measure() {
+        $("#form").submit();
+    }
+
+    function measureModalClose() {
+        measureModal.style.display = "none";
+    }
+
+    function zoomin() {
+        var zoom_val = $("#range").val();
+        google_map.setZoom(parseInt(zoom_val) + 1);
+
+        zoom_val = parseInt(zoom_val) + 1;
+
+        if (zoom_val > 20) {
+            $("#plus").addClass('disable');
+            return;
+        }
+
+        $("#range").attr('value', zoom_val);
+    }
+
+    function zoomout() {
+        var zoom_val = $("#range").val();
+        google_map.setZoom(parseInt(zoom_val) - 1);
+
+        zoom_val = parseInt(zoom_val) - 1;
+
+        if (zoom_val < 13) {
+            $("#minus").addClass('disable');
+            return;
+        }        
+
+        $("#range").attr('value', zoom_val);
+    }
+
+    $("#range").change(function(e) {
+        var zoom_val = $("#range").val();
+        google_map.setZoom(parseInt(zoom_val));
+    });
 
 
 </script>
