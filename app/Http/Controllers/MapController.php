@@ -72,15 +72,17 @@ class MapController extends Controller
         return view('map/pitch', ['lat' => $lat, 'lng' => $lng]);
     }
 
-    public function user_upload(Request $request)
+    public function uploadImage(Request $request) 
     {
-        $coordinate = $request['coordinate'];
-        $lat = explode(",", $coordinate)[0];
-        $lng = explode(",", $coordinate)[1];
+        $image_data = $request['imagedata'];
+        $imagename = $request['imagename'];
+        list($type, $image_data) = explode(';', $image_data);
+        list(, $image_data)      = explode(',', $image_data);
+        $image_data = base64_decode($image_data);
 
-        $address = $request['address'];
+        file_put_contents('bower_components/AdminLTE/dist/img/image/'.$imagename, $image_data);
 
-        return view('map/user_upload', ['lat' => $lat, 'lng' => $lng, 'address' => $address]);
+        echo json_encode("success");
     }
 
     /**
@@ -88,28 +90,6 @@ class MapController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function action()
-    {
-        return view('map/action');
-    }
-
-    public function measure_google(Request $request)
-    {
-        $coordinate = $request['coordinate1'];
-        $lat = explode(",", $coordinate)[0];
-        $lng = explode(",", $coordinate)[1];
-        $zoom = explode(",", $coordinate)[2];
-        return view('map/measure_google', ['lat' => $lat, 'lng' => $lng, 'zoom' => $zoom]);
-    }
-
-    public function measure_near(Request $request)
-    {
-        $coordinate = $request['coordinate2'];
-        $lat = explode(",", $coordinate)[0];
-        $lng = explode(",", $coordinate)[1];
-        $zoom = explode(",", $coordinate)[2];
-        return view('map/measure_near', ['lat' => $lat, 'lng' => $lng, 'zoom' => $zoom]);
-    }
 
     public function real(Request $request)
     {
@@ -131,7 +111,10 @@ class MapController extends Controller
         $type = $request['type'];
         $address = $request['address'];
         $totalArea = $request['total-area'];
-        $image = $request['image'];
+        $lsArea = $request['lsArea'];
+        $tsArea = $request['tsArea'];
+        $tlArea = $request['tlArea'];
+
         $zero_twel = $request['zero_twel'];
         $one_twel = $request['one_twel'];
         $two_twel = $request['two_twel'];
@@ -143,7 +126,115 @@ class MapController extends Controller
         $eight_twel = $request['eight_twel'];
         $nine_twel = $request['nine_twel'];
         $ten_twel = $request['ten_twel'];
-        
+        $ele_twel = $request['ele_twel'];
+        $twel_twel = $request['twel_twel'];
+        $thirteen_twel = $request['thirteen_twel'];
+        $fourteen_twel = $request['fourteen_twel'];
+        $fifteen_twel = $request['fifteen_twel'];
+        $sixteen_twel = $request['sixteen_twel'];
+        $seventeen_twel = $request['seventeen_twel'];
+        $eighteen_twel = $request['eighteen_twel'];
+        $nineteen_twel = $request['nineteen_twel'];
+        $twenty_twel = $request['twenty_twel'];
+        $twentyone_twel = $request['twentyone_twel'];
+        $twentytwo_twel = $request['twentytwo_twel'];
+        $twentythree_twel = $request['twentythree_twel'];
+        $twentyfour_twel = $request['twentyfour_twel'];
+        $twentyfive_twel = $request['twentyfive_twel'];
+        $twentysix_twel = $request['twentysix_twel'];
+        $twentyseven_twel = $request['twentyseven_twel'];
+        $twentyeight_twel = $request['twentyeight_twel'];
+        $twentynine_twel = $request['twentynine_twel'];
+        $thirty_twel = $request['thirty_twel'];
+        $thirtyone_twel = $request['thirtyone_twel'];
+        $thirtytwo_twel = $request['thirtytwo_twel'];
+        $thirtythree_twel = $request['thirtythree_twel'];
+        $thirtyfour_twel = $request['thirtyfour_twel'];
+        $thirtyfive_twel = $request['thirtyfive_twel'];
+        $thirtysix_twel = $request['thirtysix_twel'];
+        $thirtyseven_twel = $request['thirtyseven_twel'];
+        $thirtyeight_twel = $request['thirtyeight_twel'];
+        $thirtynine_twel = $request['thirtynine_twel'];
+        $fourty_twel = $request['fourty_twel'];
+        $fourtyone_twel = $request['fourtyone_twel'];
+        $fourtytwo_twel = $request['fourtytwo_twel'];
+        $fourtythree_twel = $request['fourtythree_twel'];
+        $fourtyfour_twel = $request['fourtyfour_twel'];
+        $fourtyfive_twel = $request['fourtyfive_twel'];
+        $fourtysix_twel = $request['fourtysix_twel'];
+        $fourtyseven_twel = $request['fourtyseven_twel'];
+        $fourtyeigth_twel = $request['fourtyeigth_twel'];
+        $fourtynine_twel = $request['fourtynine_twel'];
+        $fifty_twel = $request['fifty_twel'];
+        $fiftyone_twel = $request['fiftyone_twel'];
+        $fiftytwo_twel = $request['fiftytwo_twel'];
+        $fiftythree_twel = $request['fiftythree_twel'];
+        $fiftyfour_twel = $request['fiftyfour_twel'];
+        $fiftyfive_twel = $request['fiftyfive_twel'];
+        $fiftysix_twel = $request['fiftysix_twel'];
+        $fiftyseven_twel = $request['fiftyseven_twel'];
+        $fiftyeight_twel = $request['fiftyeight_twel'];
+        $fiftynine_twel = $request['fiftynine_twel'];
+        $sixty_twel = $request['sixty_twel'];
+        $sixtyone_twel = $request['sixtyone_twel'];
+        $sixtytwo_twel = $request['sixtytwo_twel'];
+        $sixtythree_twel = $request['sixtythree_twel'];
+        $sixtyfour_twel = $request['sixtyfour_twel'];
+        $sixtyfive_twel = $request['sixtyfive_twel'];
+        $sixtysix_twel = $request['sixtysix_twel'];
+        $sixtyseven_twel = $request['sixtyseven_twel'];
+        $sixtyeight_twel = $request['sixtyeight_twel'];
+        $sixtynine_twel = $request['sixtynine_twel'];
+        $seventy_twel = $request['seventy_twel'];
+        $seventyone_twel = $request['seventyone_twel'];
+        $seventytwo_twel = $request['seventytwo_twel'];
+        $seventythree_twel = $request['seventythree_twel'];
+        $seventyfour_twel = $request['seventyfour_twel'];
+        $seventyfive_twel = $request['seventyfive_twel'];
+        $seventysix_twel = $request['seventysix_twel'];
+        $seventyseven_twel = $request['seventyseven_twel'];
+        $seventyeight_twel = $request['seventyeight_twel'];
+        $seventynine_twel = $request['seventynine_twel'];
+        $eighty_twel = $request['eighty_twel'];
+        $eightyone_twel = $request['eightyone_twel'];
+        $eightytwo_twel = $request['eightytwo_twel'];
+        $eightythree_twel = $request['eightythree_twel'];
+        $eightyfour_twel = $request['eightyfour_twel'];
+        $eightyfive_twel = $request['eightyfive_twel'];
+        $eightysix_twel = $request['eightysix_twel'];
+        $eightyseven_twel = $request['eightyseven_twel'];
+        $eightyeight_twel = $request['eightyeight_twel'];
+        $eightynine_twel = $request['eightynine_twel'];
+        $ninety_twel = $request['ninety_twel'];
+        $ninetyone_twel = $request['ninetyone_twel'];
+        $ninetytwo_twel = $request['ninetytwo_twel'];
+        $ninetythree_twel = $request['ninetythree_twel'];
+        $ninetyfour_twel = $request['ninetyfour_twel'];
+        $ninetyfive_twel = $request['ninetyfive_twel'];
+        $ninetysix_twel = $request['ninetysix_twel'];
+        $ninetyseven_twel = $request['ninetyseven_twel'];
+        $ninetyeight_twel = $request['ninetyeight_twel'];
+        $ninetynine_twel = $request['ninetynine_twel'];
+        $hundred_twel = $request['hundred_twel'];
+
+        $eaves = $request['eaves'];
+        $valleys = $request['valleys'];
+        $hips = $request['hips'];
+        $ridges = $request['ridges'];
+        $rakes = $request['rakes'];
+        $wall_flashing = $request['wall_flashing'];
+        $step_flahsing = $request['step_flahsing'];
+        $unspecified = $request['unspecified'];
+
+        $polygonAreas = $request['polygonAreas'];
+        $polygonAreas = explode(',', $polygonAreas[0]);
+
+        $day = date('d');
+        $month = date("F",strtotime(date('d-m-Y')));
+        $year = date('Y');
+        $date = array($day, $month, $year);
+        $top_image = $request['top_image'];
+
         if ($type == 'csv') {
             $filename = $address.'.csv';
             $handle = fopen($filename, 'w+');
@@ -155,7 +246,7 @@ class MapController extends Controller
             }
             fputcsv($handle, $columns);
 
-            fputcsv($handle, array($address, $totalArea, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, $zero_twel, $one_twel, $two_twel, $three_twel, $four_twel, $five_twel, $six_twel, $seven_twel, $eight_twel, $nine_twel, $ten_twel, 0, 0));
+            fputcsv($handle, array($address, $totalArea, $lsArea, $tsArea, $tlArea, $eaves, $valleys, $hips, $ridges, $rakes, $wall_flashing, $step_flahsing, $unspecified, $zero_twel, $one_twel, $two_twel, $three_twel, $four_twel, $five_twel, $six_twel, $seven_twel, $eight_twel, $nine_twel, $ten_twel, $ele_twel, $twel_twel, $thirteen_twel, $fourteen_twel, $fifteen_twel, $sixteen_twel, $seventeen_twel, $eighteen_twel, $nineteen_twel, $twenty_twel, $twentyone_twel, $twentytwo_twel, $twentythree_twel, $twentyfour_twel, $twentyfive_twel, $twentysix_twel, $twentyseven_twel, $twentyeight_twel, $twentynine_twel, $thirty_twel, $thirtyone_twel, $thirtytwo_twel, $thirtythree_twel, $thirtyfour_twel, $thirtyfive_twel, $thirtysix_twel, $thirtyseven_twel, $thirtyeight_twel, $thirtynine_twel, $fourty_twel, $fourtyone_twel, $fourtytwo_twel, $fourtythree_twel, $fourtyfour_twel, $fourtyfive_twel, $fourtysix_twel, $fourtyseven_twel, $fourtyeigth_twel, $fourtynine_twel, $fifty_twel, $fiftyone_twel, $fiftytwo_twel, $fiftythree_twel, $fiftyfour_twel, $fiftyfive_twel, $fiftysix_twel, $fiftyseven_twel, $fiftyeight_twel, $fiftynine_twel, $sixty_twel, $sixtyone_twel, $sixtytwo_twel, $sixtythree_twel, $sixtyfour_twel, $sixtyfive_twel, $sixtysix_twel, $sixtyseven_twel, $sixtyeight_twel, $sixtynine_twel, $seventy_twel, $seventyone_twel, $seventytwo_twel, $seventythree_twel, $seventyfour_twel, $seventyfive_twel, $seventysix_twel, $seventyseven_twel, $seventyeight_twel, $seventynine_twel, $eighty_twel, $eightyone_twel, $eightytwo_twel, $eightythree_twel, $eightyfour_twel, $eightyfive_twel, $eightysix_twel, $eightyseven_twel, $eightyeight_twel, $eightynine_twel, $ninety_twel, $ninetyone_twel, $ninetytwo_twel, $ninetythree_twel, $ninetyfour_twel, $ninetyfive_twel, $ninetysix_twel, $ninetyseven_twel, $ninetyeight_twel, $ninetynine_twel, $hundred_twel));
 
             fclose($handle);
 
@@ -165,12 +256,13 @@ class MapController extends Controller
 
             return Response::download($filename, $filename, $headers);
         } else if ($type == 'pdf') {
-            $data = ['address' => $address, 'totalArea' => $totalArea, 'image' => $image];
+            $rootPath = base_path();
+            $data = ['address' => $address, 'totalArea' => $totalArea, 'rootPath' => $rootPath, 'date' => $date[0].'-'.$date[1].'-'.$date[2], 'top_image' => $top_image, 'eaves' => $eaves, 'ridges' => $ridges, 'rakes' => $rakes, 'hips' => $hips, 'valleys' => $valleys, 'wall_flashing' => $wall_flashing, 'step_flahsing' => $step_flahsing, 'unspecified' => $unspecified, 'polygonAreas' => $polygonAreas];
             $pdf = PDF::loadView('map/pdfview', array('data' => $data));
-            $pdf->setPaper([0,0,5000,660], 'landscape');
+            $pdf->setPaper([0,0,4000,660], 'landscape');
             return $pdf->download($address.'.pdf');
+            // return view('map/pdfview', array('data' => $data));
         }
-        // return view('map/pdfview');
     }
 
     /**

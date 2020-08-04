@@ -17,6 +17,7 @@
     <link href="{{ asset('css/app-template.css') }}" rel="stylesheet">
     <link href="{{ asset('css/ui.css') }}" rel="stylesheet">
     <link href="{{ asset('css/leaflet.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/select2.css') }}" rel="stylesheet">
     <link href="{{ asset('css/leaflet.draw.css') }}" rel="stylesheet">
     <link href="{{ asset('css/L.Grid.css') }}" rel="stylesheet">
   </head>

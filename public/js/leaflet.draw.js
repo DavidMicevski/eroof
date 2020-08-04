@@ -9,6 +9,7 @@ var feet_inch_str = "";
 var line_midLatLng;
 var zoomSl = 1, zoomSz = 30;
 var resList;
+var editingPolyIndex = 0;
 !function(t, e, i) {
     function o(t, e) {
         for (; (t = t.parentElement) && !t.classList.contains(e); )
@@ -343,9 +344,9 @@ var resList;
 
             if (!this.options.allowIntersection && e || !this._shapeIsValid())
                 return void this._showErrorTooltip();
-            this._fireCreatedEvent(),
-            this.disable(),
-            this.options.repeatMode && this.enable()
+            this._fireCreatedEvent()
+            // this.disable(),
+            // this.options.repeatMode && this.enable()
         },
         _shapeIsValid: function() {
             return !0
@@ -1154,6 +1155,8 @@ var resList;
             var e = t.target
               , i = this._poly
               , o = L.LatLngUtil.cloneLatLng(e._origLatLng);
+
+            editingPolyIndex = i.edindex;
             if (L.extend(e._origLatLng, e._latlng),
             i.options.poly) {
                 var a = i._map._editTooltip;
@@ -1202,8 +1205,6 @@ var resList;
                 res = this._GetLineLenAndPt(pt1, pt2);
                 resList.push(res);
             }
-
-            // console.log('resList: ', resList);
         },
         _GetLineLenAndPt: function(firstPt, secondPt) {
             var dist = firstPt.distanceTo(secondPt);

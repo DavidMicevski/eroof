@@ -7,7 +7,6 @@
   </a>
   <nav class="navbar navbar-static-top" role="navigation">
     @if (Request::path() == 'map/create')
-      <!-- <a href="{{ route('map.index') }}" style="float: left;"><i class="fa fa-angle-left direct-back"></i></a> -->
       <div class="col-md-2 title" style="color: #fff; float: left;">
         Create new proposal
       </div>
@@ -25,26 +24,6 @@
       <a class="btn btn-primary purchase" href="{{ route('map.create') }}">Purchase More Images</a>
       <span style="float: right; color: #fff">Premium Credits Remaining: 2</span>
     @endif
-    @if (Request::path() == 'map/action')
-      <button id="draw-tab" class="tabs">Draw</button>
-      <button id="edge-tab" class="tabs">Edges</button>
-      <button id="facet-tab" class="tabs">Facets</button>
-      <div class="col-md-1" style="float: right; padding-right: 0; margin-right: 15px">
-        <a class="btn btn-primary purchase" href="{{ route('map.create') }}" style="width: 100%; margin-right: 0">Save</a>
-      </div>
-      <div class="col-md-1" style="float: right; padding-right: 0">
-        <a class="btn cancel" style="width: 100%; margin-right: 0">Cancel</a>
-      </div>
-      <div id="undo-redo" class="col-md-1">
-        <a href="#" id="undo"><i class="fa fa-undo"></i>Undo</a>
-        <a href="#" id="redo"><i class="fa fa-repeat"></i>Redo</a>
-      </div>
-      <div class="col-md-offset-4 col-md-1" style="padding-top: 20px; color: #9c9c9d">
-        Address
-      </div>
-      <button class="btn" id="download-pdf">Download PDF</button>
-      <button class="btn" id="download-csv">Download CSV</button>
-    @endif
     @if (Request::path() == 'map/real')
       <button id="draw-tab" class="tabs" style="color: #fff">Draw</button>
       <button id="edge-tab" class="tabs" style="color: #fff">Edges</button>
@@ -56,17 +35,16 @@
         <a class="btn btn-primary purchase" id="google_btn" style="width: 100%; margin-right: 0">GoogleMap</a>
       </div>
       <div class="col-md-1" style="float: right;">
-        <a class="btn btn-primary purchase" id="pitch_btn" style="width: 100%; margin-right: 0">Download</a>
+        <div class="custom-select">
+          <select id="download-type" onchange="downloadType()">
+            <option value="0">Download</option>
+            <option value="1">Download PDF</option>
+            <option value="2">Download CSV</option>
+            <option value="3">Send Email</option>
+          </select>
+        </div>
       </div>
       <div class="col-md-offset-3 col-md-2" id="address" style="padding-top: 20px; color: #fff; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
-      </div>
-      <button class="btn" id="download-pdf">Download PDF</button>
-      <button class="btn" id="download-csv">Download CSV</button>
-    @endif
-    @if (Request::path() == 'map/measure')
-      <a href="{{ route('map.user_upload') }}" style="float: left;"><i class="fa fa-angle-left direct-back"></i></a>
-      <div class="col-md-offset-5 col-md-3 title">
-        Confirm roofing location
       </div>
     @endif
   </nav>
