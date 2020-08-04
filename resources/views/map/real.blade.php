@@ -524,6 +524,7 @@
     var pixelInchRatio1 = 0;
     var labelMarkers = [], changeLabelMarkerStatus = false, settedMark = "";
     var pixel = {{$pixel}}, distance = {{$distance}}, unit = "{{$unit}}";
+
     if (unit == 'km') { // convert km to metre
         distance = distance * 1000;
     }
@@ -584,9 +585,9 @@
                 minZoom: -1,
             });
             map.doubleClickZoom.disable();
-            var bounds = [[0, 0], [1300, 1300]];
-            var filePath = "https://maps.googleapis.com/maps/api/staticmap?center={{$lat}},{{$lng}}&zoom={{$zoom}}&size=1920x1080&maptype=satellite&key={{env('GOOGLE_IMAGE_KEY')}}";
-            $("#top_image").val("https://maps.googleapis.com/maps/api/staticmap?center={{$lat}},{{$lng}}&zoom={{$zoom}}&size=1920x1080&maptype=satellite&key={{env('GOOGLE_IMAGE_KEY')}}");
+            var bounds = [[0, 0], [300, 300]];
+            var filePath = "https://maps.googleapis.com/maps/api/staticmap?center={{$lat}},{{$lng}}&zoom={{$zoom}}&size=800x600&maptype=satellite&key={{env('GOOGLE_IMAGE_KEY')}}";
+            $("#top_image").val("https://maps.googleapis.com/maps/api/staticmap?center={{$lat}},{{$lng}}&zoom={{$zoom}}&size=800x600&maptype=satellite&key={{env('GOOGLE_IMAGE_KEY')}}");
         } else if (type == "near") {
             map = L.map('map', {
                 editable: true, 
@@ -596,7 +597,7 @@
             });
             map.doubleClickZoom.disable();
             var bounds = [[0, 0], [1280, 1024]];
-            var filePath = "http://us0.nearmap.com/staticmap?center={{$lat}},{{$lng}}&size=1920x1080&zoom={{$zoom}}&httpauth=false&apikey={{env('NEAR_KEY')}}";
+            var filePath = "http://us0.nearmap.com/staticmap?center={{$lat}},{{$lng}}&size=600x800&zoom={{$zoom}}&httpauth=false&apikey={{env('NEAR_KEY')}}";
         }
 
         var image = L.imageOverlay(filePath, bounds).addTo(map);
@@ -1866,6 +1867,17 @@
                     }
                 }
             }
+
+            // for (var i = 0; i < $("g").length; i ++) {
+            //     var html = $("g")[i].innerHTML;
+            //     if (html.split(' d').length == 2) {
+            //         var arr = html.split('" ');
+            //         var str = arr[0] + '" ' + arr[1] + '" ' + arr[2] + '" ' + 'stroke-opacity="0"' + ' ' + 'stroke-width="20"' + ' ' + arr[5] + '" ' + arr[6] + '" ' + arr[7];
+            //         $("g")[i].innerHTML += str;
+            //     } else {
+
+            //     }
+            // }
         });
 
         map.on('draw:editvertex', function (e) {
@@ -2397,8 +2409,17 @@
 
 
         function handleMouseDown(e) {
-            if (e.button === 2)
+            if (e.button === 2) {
                 myPolylineDrawHandler.disable();
+                var blockContextMenu, myElement;
+
+                blockContextMenu = function (evt) {
+                    evt.preventDefault();
+                };
+
+                myElement = document.querySelector('#map');
+                myElement.addEventListener('contextmenu', blockContextMenu);
+            }
         }
 
         function handleMouseUp(e) {
@@ -2966,30 +2987,81 @@
         svg.attr('width', 1592);
         svg.attr('height', 896);
 
+        var pointsArr = '';
+        for (var i = 0; i < layer1_lines.length; i ++) {
+            var points = layer1_lines[i]._originalPoints[0].x + ' ' + layer1_lines[i]._originalPoints[0].y + ' ' + layer1_lines[i]._originalPoints[1].x + ' ' + layer1_lines[i]._originalPoints[1].y + ' ';
+            pointsArr += points;
+        }
+
+        var polygon =  '<polygon points="' + pointsArr + '"' + ' ' + 'fill="#c0c0c0"/>';
+        svg.append(polygon);
+
+        pointsArr = '';
+        for (var i = 0; i < layer2_lines.length; i ++) {
+            var points = layer2_lines[i]._originalPoints[0].x + ' ' + layer2_lines[i]._originalPoints[0].y + ' ' + layer2_lines[i]._originalPoints[1].x + ' ' + layer2_lines[i]._originalPoints[1].y + ' ';
+            pointsArr += points;
+        }
+
+        var polygon =  '<polygon points="' + pointsArr + '"' + ' ' + 'fill="#c0c0c0"/>';
+        svg.append(polygon);
+
+        pointsArr = '';
+        for (var i = 0; i < layer3_lines.length; i ++) {
+            var points = layer3_lines[i]._originalPoints[0].x + ' ' + layer3_lines[i]._originalPoints[0].y + ' ' + layer3_lines[i]._originalPoints[1].x + ' ' + layer3_lines[i]._originalPoints[1].y + ' ';
+            pointsArr += points;
+        }
+
+        var polygon =  '<polygon points="' + pointsArr + '"' + ' ' + 'fill="#c0c0c0"/>';
+        svg.append(polygon);
+
+        pointsArr = '';
+        for (var i = 0; i < layer4_lines.length; i ++) {
+            var points = layer4_lines[i]._originalPoints[0].x + ' ' + layer4_lines[i]._originalPoints[0].y + ' ' + layer4_lines[i]._originalPoints[1].x + ' ' + layer4_lines[i]._originalPoints[1].y + ' ';
+            pointsArr += points;
+        }
+
+        var polygon =  '<polygon points="' + pointsArr + '"' + ' ' + 'fill="#c0c0c0"/>';
+        svg.append(polygon);
+
+        pointsArr = '';
+        for (var i = 0; i < layer5_lines.length; i ++) {
+            var points = layer5_lines[i]._originalPoints[0].x + ' ' + layer5_lines[i]._originalPoints[0].y + ' ' + layer5_lines[i]._originalPoints[1].x + ' ' + layer5_lines[i]._originalPoints[1].y + ' ';
+            pointsArr += points;
+        }
+
+        var polygon =  '<polygon points="' + pointsArr + '"' + ' ' + 'fill="#c0c0c0"/>';
+        svg.append(polygon);
+
+        var index = 0;
         for (var i = 0; i < mark1.length; i ++) {
-            var area = '<g transform="translate('+mark1[i][mark1[i].length - 1]._icon._leaflet_pos.x+' '+mark1[i][mark1[i].length - 1]._icon._leaflet_pos.y+')"><text>'+i+'</text></g>';
+            var area = '<g transform="translate('+mark1[i][mark1[i].length - 1]._icon._leaflet_pos.x+' '+mark1[i][mark1[i].length - 1]._icon._leaflet_pos.y+')"><text fill="black">'+String.fromCharCode(index+65)+'</text></g>';
             svg.append(area);
             polygonAreas.push(parseInt(mark1[i][mark1[i].length - 1].dragging._marker.options.icon.options.html));
+            index ++;
         }
         for (var i = 0; i < mark2.length; i ++) {
-            var area = '<g transform="translate('+mark2[i][mark2[i].length - 1]._icon._leaflet_pos.x+' '+mark2[i][mark2[i].length - 1]._icon._leaflet_pos.y+')"><text>'+i+'</text></g>';
+            var area = '<g transform="translate('+mark2[i][mark2[i].length - 1]._icon._leaflet_pos.x+' '+mark2[i][mark2[i].length - 1]._icon._leaflet_pos.y+')"><text fill="black">'+String.fromCharCode(index+65)+'</text></g>';
             svg.append(area);
             polygonAreas.push(parseInt(mark2[i][mark2[i].length - 1].dragging._marker.options.icon.options.html));
+            index ++;
         }
         for (var i = 0; i < mark3.length; i ++) {
-            var area = '<g transform="translate('+mark3[i][mark3[i].length - 1]._icon._leaflet_pos.x+' '+mark3[i][mark3[i].length - 1]._icon._leaflet_pos.y+')"><text>'+i+'</text></g>';
+            var area = '<g transform="translate('+mark3[i][mark3[i].length - 1]._icon._leaflet_pos.x+' '+mark3[i][mark3[i].length - 1]._icon._leaflet_pos.y+')"><text fill="black">'+String.fromCharCode(index+65)+'</text></g>';
             svg.append(area);
             polygonAreas.push(parseInt(mark3[i][mark3[i].length - 1].dragging._marker.options.icon.options.html));
+            index ++;
         }
         for (var i = 0; i < mark4.length; i ++) {
-            var area = '<g transform="translate('+mark4[i][mark4[i].length - 1]._icon._leaflet_pos.x+' '+mark4[i][mark4[i].length - 1]._icon._leaflet_pos.y+')"><text>'+i+'</text></g>';
+            var area = '<g transform="translate('+mark4[i][mark4[i].length - 1]._icon._leaflet_pos.x+' '+mark4[i][mark4[i].length - 1]._icon._leaflet_pos.y+')"><text fill="black">'+String.fromCharCode(index+65)+'</text></g>';
             svg.append(area);
             polygonAreas.push(parseInt(mark4[i][mark4[i].length - 1].dragging._marker.options.icon.options.html));
+            index ++;
         }
         for (var i = 0; i < mark5.length; i ++) {
-            var area = '<g transform="translate('+mark5[i][mark5[i].length - 1]._icon._leaflet_pos.x+' '+mark5[i][mark5[i].length - 1]._icon._leaflet_pos.y+')"><text>'+i+'</text></g>';
+            var area = '<g transform="translate('+mark5[i][mark5[i].length - 1]._icon._leaflet_pos.x+' '+mark5[i][mark5[i].length - 1]._icon._leaflet_pos.y+')"><text fill="black">'+String.fromCharCode(index+65)+'</text></g>';
             svg.append(area);
             polygonAreas.push(parseInt(mark5[i][mark5[i].length - 1].dragging._marker.options.icon.options.html));
+            index ++;
         }
 
         $("#polygonAreas").val(polygonAreas);
@@ -7747,6 +7819,7 @@
         map.addLayer(drawnItems);
 
         deleteModal.style.display = "none";
+        $("#totalArea").text(0);
     }
 
     function resetData() {
@@ -8202,6 +8275,64 @@
 
                 var polyline = null;
                 var count = layer1.length - 1;
+                for (var i = 0; i < layer1_lines.length; i ++) {
+                    polyline = layer1_lines[i].addTo(map);
+                    polyline.on('click', function(e) {
+                        if (deleteEdgeStatus) {
+                            e.target.status = 0;
+                            map.removeLayer(e.target);
+
+                            map.removeLayer(mark1[e.target.pgindex][e.target.index]);
+                            mark1[e.target.pgindex][e.target.index].status = 0;
+
+                            map.removeLayer(mark1[e.target.pgindex][mark1[e.target.pgindex].length - 1]);
+                            mark1[e.target.pgindex][mark1[e.target.pgindex].length - 1].status = 0;
+
+                            deleteEdgeStatus = !deleteEdgeStatus;
+                            changeLineStatus = false;
+                        }
+
+                        if (changeLineStatus) {
+                            var polygon = layer1_polygon[e.target.pgindex];
+                            var polygon_pitch = (polygon.pitch == undefined) ? 0 : polygon.pitch;
+                            if (polygon_pitch == 0) {
+                                e.target.type = lineType;
+                                e.target.color = lineColor;
+                                e.target.setStyle({
+                                    color: lineColor
+                                });
+                                deleteEdgeStatus = false;
+                            } else {
+                                var original_length = mark1[e.target.pgindex][e.target.index].editing._marker.options.icon.options.html;
+                                original_length = original_length.split(" ");
+                                if (original_length.length > 1)
+                                    original_length = parseInt(original_length[0])*12 + parseInt(original_length[1]);
+                                else
+                                    original_length = parseInt(original_length[0])*12;
+                                var new_length = Math.round(Math.sqrt(Math.pow(12, 2) + Math.pow(polygon_pitch, 2))/12 * original_length);
+                                new_length = Math.floor(new_length/12) + "ft" + " " + new_length%12 + "in"
+                                
+                                var original_latlng = mark1[e.target.pgindex][e.target.index]._latlng;
+                                map.removeLayer(mark1[e.target.pgindex][e.target.index]);
+                                var marker = L.marker(original_latlng, {
+                                    icon: L.divIcon({
+                                        html: new_length,
+                                        className: 'text-below-marker',
+                                    })
+                                }).addTo(map);
+                                marker.status = 1;
+                                mark1[e.target.pgindex][e.target.index] = marker;
+                                e.target.type = lineType;
+                                e.target.length = mark1[e.target.pgindex][e.target.index].editing._marker.options.icon.options.html;
+                                e.target.color = lineColor;
+                                e.target.setStyle({
+                                    color: lineColor
+                                });
+                                deleteEdgeStatus = false;
+                            }
+                        }
+                    });
+                }
                 for (var j = 0; j < layer1[count].length - 1; j ++) {
                     polyline = L.polyline([layer1[count][j], layer1[count][j + 1]], {color: '#3388ff', opacity: 1, weight: 2}).addTo(map);
                     polyline.pgindex = count;
@@ -8365,8 +8496,68 @@
                 mark2.push(mark2_temp);
                 mark2_temp = [];
 
+                $("#totalArea").text(Number($("#totalArea").text()) + polygonArea);
+
                 var polyline = null;
                 var count = layer2.length - 1;
+                for (var i = 0; i < layer2_lines.length; i ++) {
+                    polyline = layer2_lines[i].addTo(map);
+                    polyline.on('click', function(e) {
+                        if (deleteEdgeStatus) {
+                            e.target.status = 0;
+                            map.removeLayer(e.target);
+
+                            map.removeLayer(mark2[e.target.pgindex][e.target.index]);
+                            mark2[e.target.pgindex][e.target.index].status = 0;
+
+                            map.removeLayer(mark2[e.target.pgindex][mark2[e.target.pgindex].length - 1]);
+                            mark2[e.target.pgindex][mark2[e.target.pgindex].length - 1].status = 0;
+
+                            deleteEdgeStatus = !deleteEdgeStatus;
+                            changeLineStatus = false;
+                        }
+
+                        if (changeLineStatus) {
+                            var polygon = layer2_polygon[e.target.pgindex];
+                            var polygon_pitch = (polygon.pitch == undefined) ? 0 : polygon.pitch;
+                            if (polygon_pitch == 0) {
+                                e.target.type = lineType;
+                                e.target.color = lineColor;
+                                e.target.setStyle({
+                                    color: lineColor
+                                });
+                                deleteEdgeStatus = false;
+                            } else {
+                                var original_length = mark2[e.target.pgindex][e.target.index].editing._marker.options.icon.options.html;
+                                original_length = original_length.split(" ");
+                                if (original_length.length > 1)
+                                    original_length = parseInt(original_length[0])*12 + parseInt(original_length[1]);
+                                else
+                                    original_length = parseInt(original_length[0])*12;
+                                var new_length = Math.round(Math.sqrt(Math.pow(12, 2) + Math.pow(polygon_pitch, 2))/12 * original_length);
+                                new_length = Math.floor(new_length/12) + "ft" + " " + new_length%12 + "in"
+                                
+                                var original_latlng = mark2[e.target.pgindex][e.target.index]._latlng;
+                                map.removeLayer(mark2[e.target.pgindex][e.target.index]);
+                                var marker = L.marker(original_latlng, {
+                                    icon: L.divIcon({
+                                        html: new_length,
+                                        className: 'text-below-marker',
+                                    })
+                                }).addTo(map);
+                                marker.status = 1;
+                                mark2[e.target.pgindex][e.target.index] = marker;
+                                e.target.type = lineType;
+                                e.target.length = mark2[e.target.pgindex][e.target.index].editing._marker.options.icon.options.html;
+                                e.target.color = lineColor;
+                                e.target.setStyle({
+                                    color: lineColor
+                                });
+                                deleteEdgeStatus = false;
+                            }
+                        }
+                    });
+                }
                 for (var j = 0; j < layer2[count].length - 1; j ++) {
                     polyline = L.polyline([layer2[count][j], layer2[count][j + 1]], {color: '#3388ff', opacity: 1, weight: 2}).addTo(map);
                     polyline.pgindex = count;
@@ -8421,7 +8612,6 @@
                                 }).addTo(map);
                                 marker.status = 1;
                                 mark2[e.target.pgindex][e.target.index] = marker;
-
                                 e.target.type = lineType;
                                 e.target.length = mark2[e.target.pgindex][e.target.index].editing._marker.options.icon.options.html;
                                 e.target.color = lineColor;
@@ -8432,7 +8622,7 @@
                             }
                         }
                     });
-                    
+
                     if (j == layer2[count].length - 2) {
                         polyline = L.polyline([layer2[count][j + 1], layer2[count][0]], {color: '#3388ff', opacity: 1, weight: 2}).addTo(map);                         
                         polyline.pgindex = count;
@@ -8442,7 +8632,7 @@
                         polyline.length = mark2[polyline.pgindex][polyline.index + 1].editing._marker.options.icon.options.html;
                         polyline.type = "Unspecified";
                         layer2_lines.push(polyline);
-                        
+
                         polyline.on('click', function(e) {
                             if (deleteEdgeStatus) {
                                 e.target.status = 0;
@@ -8531,8 +8721,68 @@
                 mark3.push(mark3_temp);
                 mark3_temp = [];
 
+                $("#totalArea").text(Number($("#totalArea").text()) + polygonArea);
+
                 var polyline = null;
                 var count = layer3.length - 1;
+                for (var i = 0; i < layer3_lines.length; i ++) {
+                    polyline = layer3_lines[i].addTo(map);
+                    polyline.on('click', function(e) {
+                        if (deleteEdgeStatus) {
+                            e.target.status = 0;
+                            map.removeLayer(e.target);
+
+                            map.removeLayer(mark3[e.target.pgindex][e.target.index]);
+                            mark3[e.target.pgindex][e.target.index].status = 0;
+
+                            map.removeLayer(mark3[e.target.pgindex][mark3[e.target.pgindex].length - 1]);
+                            mark3[e.target.pgindex][mark3[e.target.pgindex].length - 1].status = 0;
+
+                            deleteEdgeStatus = !deleteEdgeStatus;
+                            changeLineStatus = false;
+                        }
+
+                        if (changeLineStatus) {
+                            var polygon = layer3_polygon[e.target.pgindex];
+                            var polygon_pitch = (polygon.pitch == undefined) ? 0 : polygon.pitch;
+                            if (polygon_pitch == 0) {
+                                e.target.type = lineType;
+                                e.target.color = lineColor;
+                                e.target.setStyle({
+                                    color: lineColor
+                                });
+                                deleteEdgeStatus = false;
+                            } else {
+                                var original_length = mark3[e.target.pgindex][e.target.index].editing._marker.options.icon.options.html;
+                                original_length = original_length.split(" ");
+                                if (original_length.length > 1)
+                                    original_length = parseInt(original_length[0])*12 + parseInt(original_length[1]);
+                                else
+                                    original_length = parseInt(original_length[0])*12;
+                                var new_length = Math.round(Math.sqrt(Math.pow(12, 2) + Math.pow(polygon_pitch, 2))/12 * original_length);
+                                new_length = Math.floor(new_length/12) + "ft" + " " + new_length%12 + "in"
+                                
+                                var original_latlng = mark3[e.target.pgindex][e.target.index]._latlng;
+                                map.removeLayer(mark3[e.target.pgindex][e.target.index]);
+                                var marker = L.marker(original_latlng, {
+                                    icon: L.divIcon({
+                                        html: new_length,
+                                        className: 'text-below-marker',
+                                    })
+                                }).addTo(map);
+                                marker.status = 1;
+                                mark3[e.target.pgindex][e.target.index] = marker;
+                                e.target.type = lineType;
+                                e.target.length = mark3[e.target.pgindex][e.target.index].editing._marker.options.icon.options.html;
+                                e.target.color = lineColor;
+                                e.target.setStyle({
+                                    color: lineColor
+                                });
+                                deleteEdgeStatus = false;
+                            }
+                        }
+                    });
+                }
                 for (var j = 0; j < layer3[count].length - 1; j ++) {
                     polyline = L.polyline([layer3[count][j], layer3[count][j + 1]], {color: '#3388ff', opacity: 1, weight: 2}).addTo(map);
                     polyline.pgindex = count;
@@ -8587,7 +8837,6 @@
                                 }).addTo(map);
                                 marker.status = 1;
                                 mark3[e.target.pgindex][e.target.index] = marker;
-
                                 e.target.type = lineType;
                                 e.target.length = mark3[e.target.pgindex][e.target.index].editing._marker.options.icon.options.html;
                                 e.target.color = lineColor;
@@ -8598,7 +8847,7 @@
                             }
                         }
                     });
-                    
+
                     if (j == layer3[count].length - 2) {
                         polyline = L.polyline([layer3[count][j + 1], layer3[count][0]], {color: '#3388ff', opacity: 1, weight: 2}).addTo(map);                         
                         polyline.pgindex = count;
@@ -8608,7 +8857,7 @@
                         polyline.length = mark3[polyline.pgindex][polyline.index + 1].editing._marker.options.icon.options.html;
                         polyline.type = "Unspecified";
                         layer3_lines.push(polyline);
-                        
+
                         polyline.on('click', function(e) {
                             if (deleteEdgeStatus) {
                                 e.target.status = 0;
@@ -8697,10 +8946,70 @@
                 mark4.push(mark4_temp);
                 mark4_temp = [];
 
+                $("#totalArea").text(Number($("#totalArea").text()) + polygonArea);
+
                 var polyline = null;
                 var count = layer4.length - 1;
+                for (var i = 0; i < layer4_lines.length; i ++) {
+                    polyline = layer4_lines[i].addTo(map);
+                    polyline.on('click', function(e) {
+                        if (deleteEdgeStatus) {
+                            e.target.status = 0;
+                            map.removeLayer(e.target);
+
+                            map.removeLayer(mark4[e.target.pgindex][e.target.index]);
+                            mark4[e.target.pgindex][e.target.index].status = 0;
+
+                            map.removeLayer(mark4[e.target.pgindex][mark4[e.target.pgindex].length - 1]);
+                            mark4[e.target.pgindex][mark4[e.target.pgindex].length - 1].status = 0;
+
+                            deleteEdgeStatus = !deleteEdgeStatus;
+                            changeLineStatus = false;
+                        }
+
+                        if (changeLineStatus) {
+                            var polygon = layer4_polygon[e.target.pgindex];
+                            var polygon_pitch = (polygon.pitch == undefined) ? 0 : polygon.pitch;
+                            if (polygon_pitch == 0) {
+                                e.target.type = lineType;
+                                e.target.color = lineColor;
+                                e.target.setStyle({
+                                    color: lineColor
+                                });
+                                deleteEdgeStatus = false;
+                            } else {
+                                var original_length = mark4[e.target.pgindex][e.target.index].editing._marker.options.icon.options.html;
+                                original_length = original_length.split(" ");
+                                if (original_length.length > 1)
+                                    original_length = parseInt(original_length[0])*12 + parseInt(original_length[1]);
+                                else
+                                    original_length = parseInt(original_length[0])*12;
+                                var new_length = Math.round(Math.sqrt(Math.pow(12, 2) + Math.pow(polygon_pitch, 2))/12 * original_length);
+                                new_length = Math.floor(new_length/12) + "ft" + " " + new_length%12 + "in"
+                                
+                                var original_latlng = mark4[e.target.pgindex][e.target.index]._latlng;
+                                map.removeLayer(mark4[e.target.pgindex][e.target.index]);
+                                var marker = L.marker(original_latlng, {
+                                    icon: L.divIcon({
+                                        html: new_length,
+                                        className: 'text-below-marker',
+                                    })
+                                }).addTo(map);
+                                marker.status = 1;
+                                mark4[e.target.pgindex][e.target.index] = marker;
+                                e.target.type = lineType;
+                                e.target.length = mark4[e.target.pgindex][e.target.index].editing._marker.options.icon.options.html;
+                                e.target.color = lineColor;
+                                e.target.setStyle({
+                                    color: lineColor
+                                });
+                                deleteEdgeStatus = false;
+                            }
+                        }
+                    });
+                }
                 for (var j = 0; j < layer4[count].length - 1; j ++) {
-                    var polyline = L.polyline([layer4[count][j], layer4[count][j + 1]], {color: '#3388ff', opacity: 1, weight: 2}).addTo(map);
+                    polyline = L.polyline([layer4[count][j], layer4[count][j + 1]], {color: '#3388ff', opacity: 1, weight: 2}).addTo(map);
                     polyline.pgindex = count;
                     polyline.index = j;
                     polyline.status = 1;
@@ -8753,7 +9062,6 @@
                                 }).addTo(map);
                                 marker.status = 1;
                                 mark4[e.target.pgindex][e.target.index] = marker;
-
                                 e.target.type = lineType;
                                 e.target.length = mark4[e.target.pgindex][e.target.index].editing._marker.options.icon.options.html;
                                 e.target.color = lineColor;
@@ -8764,7 +9072,7 @@
                             }
                         }
                     });
-                    
+
                     if (j == layer4[count].length - 2) {
                         polyline = L.polyline([layer4[count][j + 1], layer4[count][0]], {color: '#3388ff', opacity: 1, weight: 2}).addTo(map);                         
                         polyline.pgindex = count;
@@ -8774,7 +9082,7 @@
                         polyline.length = mark4[polyline.pgindex][polyline.index + 1].editing._marker.options.icon.options.html;
                         polyline.type = "Unspecified";
                         layer4_lines.push(polyline);
-                        
+
                         polyline.on('click', function(e) {
                             if (deleteEdgeStatus) {
                                 e.target.status = 0;
@@ -8863,8 +9171,68 @@
                 mark5.push(mark5_temp);
                 mark5_temp = [];
 
+                $("#totalArea").text(Number($("#totalArea").text()) + polygonArea);
+
                 var polyline = null;
                 var count = layer5.length - 1;
+                for (var i = 0; i < layer5_lines.length; i ++) {
+                    polyline = layer5_lines[i].addTo(map);
+                    polyline.on('click', function(e) {
+                        if (deleteEdgeStatus) {
+                            e.target.status = 0;
+                            map.removeLayer(e.target);
+
+                            map.removeLayer(mark5[e.target.pgindex][e.target.index]);
+                            mark5[e.target.pgindex][e.target.index].status = 0;
+
+                            map.removeLayer(mark5[e.target.pgindex][mark5[e.target.pgindex].length - 1]);
+                            mark5[e.target.pgindex][mark5[e.target.pgindex].length - 1].status = 0;
+
+                            deleteEdgeStatus = !deleteEdgeStatus;
+                            changeLineStatus = false;
+                        }
+
+                        if (changeLineStatus) {
+                            var polygon = layer5_polygon[e.target.pgindex];
+                            var polygon_pitch = (polygon.pitch == undefined) ? 0 : polygon.pitch;
+                            if (polygon_pitch == 0) {
+                                e.target.type = lineType;
+                                e.target.color = lineColor;
+                                e.target.setStyle({
+                                    color: lineColor
+                                });
+                                deleteEdgeStatus = false;
+                            } else {
+                                var original_length = mark5[e.target.pgindex][e.target.index].editing._marker.options.icon.options.html;
+                                original_length = original_length.split(" ");
+                                if (original_length.length > 1)
+                                    original_length = parseInt(original_length[0])*12 + parseInt(original_length[1]);
+                                else
+                                    original_length = parseInt(original_length[0])*12;
+                                var new_length = Math.round(Math.sqrt(Math.pow(12, 2) + Math.pow(polygon_pitch, 2))/12 * original_length);
+                                new_length = Math.floor(new_length/12) + "ft" + " " + new_length%12 + "in"
+                                
+                                var original_latlng = mark5[e.target.pgindex][e.target.index]._latlng;
+                                map.removeLayer(mark5[e.target.pgindex][e.target.index]);
+                                var marker = L.marker(original_latlng, {
+                                    icon: L.divIcon({
+                                        html: new_length,
+                                        className: 'text-below-marker',
+                                    })
+                                }).addTo(map);
+                                marker.status = 1;
+                                mark5[e.target.pgindex][e.target.index] = marker;
+                                e.target.type = lineType;
+                                e.target.length = mark5[e.target.pgindex][e.target.index].editing._marker.options.icon.options.html;
+                                e.target.color = lineColor;
+                                e.target.setStyle({
+                                    color: lineColor
+                                });
+                                deleteEdgeStatus = false;
+                            }
+                        }
+                    });
+                }
                 for (var j = 0; j < layer5[count].length - 1; j ++) {
                     polyline = L.polyline([layer5[count][j], layer5[count][j + 1]], {color: '#3388ff', opacity: 1, weight: 2}).addTo(map);
                     polyline.pgindex = count;
@@ -8919,7 +9287,6 @@
                                 }).addTo(map);
                                 marker.status = 1;
                                 mark5[e.target.pgindex][e.target.index] = marker;
-
                                 e.target.type = lineType;
                                 e.target.length = mark5[e.target.pgindex][e.target.index].editing._marker.options.icon.options.html;
                                 e.target.color = lineColor;
@@ -8930,7 +9297,7 @@
                             }
                         }
                     });
-                    
+
                     if (j == layer5[count].length - 2) {
                         polyline = L.polyline([layer5[count][j + 1], layer5[count][0]], {color: '#3388ff', opacity: 1, weight: 2}).addTo(map);                         
                         polyline.pgindex = count;
@@ -8940,7 +9307,7 @@
                         polyline.length = mark5[polyline.pgindex][polyline.index + 1].editing._marker.options.icon.options.html;
                         polyline.type = "Unspecified";
                         layer5_lines.push(polyline);
-                        
+
                         polyline.on('click', function(e) {
                             if (deleteEdgeStatus) {
                                 e.target.status = 0;

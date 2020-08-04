@@ -37,7 +37,7 @@
                 <div class="col-md-7" id="google-body" style="padding-right: 0px">
                     <div class="col-md-12" id="google-map" style="height: 245px">
                     </div>
-                    <div id="scale" style="display: none;">
+                    <div id="scale" style="display: block;">
                         <div id="scale-value"></div>
                         <div id="scale-bar"></div>
                     </div>
@@ -60,7 +60,7 @@
                     </div>
                     <p style="margin-top: 15px">Zoom</p>
                     <div class="col-md-11">
-                        <input id="range" type="range" min="13" max="20" value="20">
+                        <input id="range" type="range" min="13" max="21" value="21">
                         <a href="#" id="minus" style="float: left;" onclick="zoomout()"><i class="fa fa-search-minus"></i></a>
                         <a href="#" id="plus" style="float: right;" onclick="zoomin()"><i class="fa fa-search-plus"></i></a>
                     </div>
@@ -252,7 +252,7 @@
                 map.fitBounds(place.geometry.viewport);
             } else {
                 map.setCenter(place.geometry.location);
-                map.setZoom(20);
+                map.setZoom(21);
             }
             // marker.setPosition(place.geometry.location);
             // marker.setVisible(true);
@@ -316,7 +316,7 @@
                     position: google.maps.ControlPosition.TOP_RIGHT
                 },
                 gestureHandling: 'greedy',
-                zoom: 20
+                zoom: 21
             });
 
             coordinate = google_lat + ',' + google_lng + "," + google_map.getZoom() + "";
@@ -343,7 +343,7 @@
 
             google.maps.event.addListener(google_map, 'idle', makeScaleGoogle);
 
-            google.maps.event.addListener(map, 'idle', makeScaleGoogle);
+            // google.maps.event.addListener(map, 'idle', makeScaleGoogle);
 
         ///////-Near Map
         if (apikey === undefined || apikey.length === 0) {
@@ -360,7 +360,7 @@
         ];
 
         var mapOptions = {
-            zoom: 20,
+            zoom: 21,
             center: {
                 lat: near_lat,
                 lng: near_lng
@@ -442,9 +442,7 @@
         for (var i = 0; i < scaleValues.length; i++) {
             if (i !== scaleValues.length - 1) {
                 if (((minScale <= scaleValues[i].val) && (scaleValues[i].val <= maxScale)) || ((minScale > scaleValues[i].val) && (maxScale) < scaleValues[i + 1].val)) {
-
                     setScaleValuesGoogle(scale, scaleValues[i]);
-
                     break;
                 }
             } else {
@@ -459,6 +457,8 @@
         document.getElementById('scale-value').innerHTML = values.dspVal;
 
         coordinate = google_lat + ',' + google_lng + "," + google_map.getZoom() + "," + scaleWidth + "," + values.dspVal;
+
+        console.log(coordinate);
         $("#coordinate").val(coordinate);
     }
 
@@ -484,12 +484,12 @@
     }
 
     function setScaleValuesNear(scale, values) {
-        let scaleWidth = values.val / scale;
-        document.getElementById('scale-bar').style.width = scaleWidth + 'px';
-        document.getElementById('scale-value').innerHTML = values.dspVal;
+        // let scaleWidth = values.val / scale;
+        // document.getElementById('scale-bar').style.width = scaleWidth + 'px';
+        // document.getElementById('scale-value').innerHTML = values.dspVal;
 
-        coordinate = near_lat + ',' + near_lng + "," + near_map.getZoom() + "," + scaleWidth + "," + values.dspVal;
-        $("#coordinate").val(coordinate);
+        // coordinate = near_lat + ',' + near_lng + "," + near_map.getZoom() + "," + scaleWidth + "," + values.dspVal;
+        // $("#coordinate").val(coordinate);
     }
 
     function degreesToRadians(deg) {
@@ -670,7 +670,7 @@
             near_map.setZoom(zoom_val);
         }
 
-        if (zoom_val > 20) {
+        if (zoom_val > 21) {
             $("#plus").addClass('disable');
             return;
         }

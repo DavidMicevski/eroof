@@ -669,7 +669,7 @@ div.cls_057{font-family:"Calibri",serif;font-size:9px;color:rgb(0,175,239);font-
 
 <div style="position:absolute;left:0px;top:0px">
 	<img src="<?php echo $data['rootPath'] ?>/public/bower_components/AdminLTE/dist/img/image/image008.jpg" width=792 height=612>
-	<img src="<?php echo $data['rootPath'] ?>/public/bower_components/AdminLTE/dist/img/image/image008_1.jpg" style="width: 792px; height: 612px; position: absolute; left: -100px; top: 100px">
+	<img src="<?php echo $data['rootPath'] ?>/public/bower_components/AdminLTE/dist/img/image/image008_1.jpg" style="width: 792px; height: 612px; position: absolute; left: 0px; top: 100px">
 </div>
 
 <div style="position:absolute;left:35.60px;top:13.20px" class="cls_014"><?php echo $data['date'] ?></div>
