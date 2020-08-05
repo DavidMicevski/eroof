@@ -519,6 +519,8 @@
 <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
 <script src="{{ asset('js/leaflet.js') }}"></script>
 <script src="{{ asset('js/leaflet.draw.js') }}"></script>
+<script src="{{ asset('js/geometryutil.js') }}"></script>
+<script src="{{ asset('js/leaflet.almostover.js') }}"></script>
 <script type="text/javascript">
     var crossHairStatus = false;
     var pixelInchRatio1 = 0;
@@ -597,7 +599,7 @@
             });
             map.doubleClickZoom.disable();
             var bounds = [[0, 0], [1280, 1024]];
-            var filePath = "http://us0.nearmap.com/staticmap?center={{$lat}},{{$lng}}&size=600x800&zoom={{$zoom}}&httpauth=false&apikey={{env('NEAR_KEY')}}";
+            var filePath = "http://us0.nearmap.com/staticmap?center={{$lat}},{{$lng}}&size=800x600&zoom={{$zoom}}&httpauth=false&apikey={{env('NEAR_KEY')}}";
         }
 
         var image = L.imageOverlay(filePath, bounds).addTo(map);
@@ -835,6 +837,21 @@
                 }
                 for (var j = 0; j < layer1[count].length - 1; j ++) {
                     polyline = L.polyline([layer1[count][j], layer1[count][j + 1]], {color: '#3388ff', opacity: 1, weight: 2}).addTo(map);
+                    map.almostOver.addLayer(polyline);
+                    map.on('almost:click', function(e) {
+                        var layer = e.layer;
+                        if (layer.openPopup) {
+                            layer.fire('click', e);
+                        }
+                    });
+                    // map.on('almost:over', function (e) {
+                    //     $(".leaflet-mouse-marker").css ({
+                    //         'cursor': 'copy'
+                    //     });
+                    // });
+                    // map.on('almost:out', function(e) {
+                    //     crosshair();
+                    // });
                     polyline.pgindex = count;
                     polyline.index = j;
                     polyline.status = 1;
@@ -900,6 +917,16 @@
 
                     if (j == layer1[count].length - 2) {
                         polyline = L.polyline([layer1[count][j + 1], layer1[count][0]], {color: '#3388ff', opacity: 1, weight: 2}).addTo(map);                         
+                        map.almostOver.addLayer(polyline);
+                        map.on('almost:click', function(e) {
+                            var layer = e.layer;
+                            if (layer.openPopup) {
+                                layer.fire('click', e);
+                            }
+                        });
+                        // map.on('almost:over', function (e) {
+                        //     $('html,body').css('cursor','crosshair');
+                        // });
                         polyline.pgindex = count;
                         polyline.index = j;
                         polyline.status = 1;
@@ -1060,6 +1087,13 @@
                 }
                 for (var j = 0; j < layer2[count].length - 1; j ++) {
                     polyline = L.polyline([layer2[count][j], layer2[count][j + 1]], {color: '#3388ff', opacity: 1, weight: 2}).addTo(map);
+                    map.almostOver.addLayer(polyline);
+                    map.on('almost:click', function(e) {
+                        var layer = e.layer;
+                        if (layer.openPopup) {
+                            layer.fire('click', e);
+                        }
+                    });
                     polyline.pgindex = count;
                     polyline.index = j;
                     polyline.status = 1;
@@ -1125,6 +1159,13 @@
 
                     if (j == layer2[count].length - 2) {
                         polyline = L.polyline([layer2[count][j + 1], layer2[count][0]], {color: '#3388ff', opacity: 1, weight: 2}).addTo(map);                         
+                        map.almostOver.addLayer(polyline);
+                        map.on('almost:click', function(e) {
+                            var layer = e.layer;
+                            if (layer.openPopup) {
+                                layer.fire('click', e);
+                            }
+                        });
                         polyline.pgindex = count;
                         polyline.index = j;
                         polyline.status = 1;
@@ -1285,6 +1326,13 @@
                 }
                 for (var j = 0; j < layer3[count].length - 1; j ++) {
                     polyline = L.polyline([layer3[count][j], layer3[count][j + 1]], {color: '#3388ff', opacity: 1, weight: 2}).addTo(map);
+                    map.almostOver.addLayer(polyline);
+                    map.on('almost:click', function(e) {
+                        var layer = e.layer;
+                        if (layer.openPopup) {
+                            layer.fire('click', e);
+                        }
+                    });
                     polyline.pgindex = count;
                     polyline.index = j;
                     polyline.status = 1;
@@ -1350,6 +1398,13 @@
 
                     if (j == layer3[count].length - 2) {
                         polyline = L.polyline([layer3[count][j + 1], layer3[count][0]], {color: '#3388ff', opacity: 1, weight: 2}).addTo(map);                         
+                        map.almostOver.addLayer(polyline);
+                        map.on('almost:click', function(e) {
+                            var layer = e.layer;
+                            if (layer.openPopup) {
+                                layer.fire('click', e);
+                            }
+                        });
                         polyline.pgindex = count;
                         polyline.index = j;
                         polyline.status = 1;
@@ -1510,6 +1565,13 @@
                 }
                 for (var j = 0; j < layer4[count].length - 1; j ++) {
                     polyline = L.polyline([layer4[count][j], layer4[count][j + 1]], {color: '#3388ff', opacity: 1, weight: 2}).addTo(map);
+                    map.almostOver.addLayer(polyline);
+                    map.on('almost:click', function(e) {
+                        var layer = e.layer;
+                        if (layer.openPopup) {
+                            layer.fire('click', e);
+                        }
+                    });
                     polyline.pgindex = count;
                     polyline.index = j;
                     polyline.status = 1;
@@ -1575,6 +1637,13 @@
 
                     if (j == layer4[count].length - 2) {
                         polyline = L.polyline([layer4[count][j + 1], layer4[count][0]], {color: '#3388ff', opacity: 1, weight: 2}).addTo(map);                         
+                        map.almostOver.addLayer(polyline);
+                        map.on('almost:click', function(e) {
+                            var layer = e.layer;
+                            if (layer.openPopup) {
+                                layer.fire('click', e);
+                            }
+                        });
                         polyline.pgindex = count;
                         polyline.index = j;
                         polyline.status = 1;
@@ -1735,6 +1804,13 @@
                 }
                 for (var j = 0; j < layer5[count].length - 1; j ++) {
                     polyline = L.polyline([layer5[count][j], layer5[count][j + 1]], {color: '#3388ff', opacity: 1, weight: 2}).addTo(map);
+                    map.almostOver.addLayer(polyline);
+                    map.on('almost:click', function(e) {
+                        var layer = e.layer;
+                        if (layer.openPopup) {
+                            layer.fire('click', e);
+                        }
+                    });
                     polyline.pgindex = count;
                     polyline.index = j;
                     polyline.status = 1;
@@ -1800,6 +1876,13 @@
 
                     if (j == layer5[count].length - 2) {
                         polyline = L.polyline([layer5[count][j + 1], layer5[count][0]], {color: '#3388ff', opacity: 1, weight: 2}).addTo(map);                         
+                        map.almostOver.addLayer(polyline);
+                        map.on('almost:click', function(e) {
+                            var layer = e.layer;
+                            if (layer.openPopup) {
+                                layer.fire('click', e);
+                            }
+                        });
                         polyline.pgindex = count;
                         polyline.index = j;
                         polyline.status = 1;
@@ -1867,17 +1950,6 @@
                     }
                 }
             }
-
-            // for (var i = 0; i < $("g").length; i ++) {
-            //     var html = $("g")[i].innerHTML;
-            //     if (html.split(' d').length == 2) {
-            //         var arr = html.split('" ');
-            //         var str = arr[0] + '" ' + arr[1] + '" ' + arr[2] + '" ' + 'stroke-opacity="0"' + ' ' + 'stroke-width="20"' + ' ' + arr[5] + '" ' + arr[6] + '" ' + arr[7];
-            //         $("g")[i].innerHTML += str;
-            //     } else {
-
-            //     }
-            // }
         });
 
         map.on('draw:editvertex', function (e) {
@@ -8335,6 +8407,21 @@
                 }
                 for (var j = 0; j < layer1[count].length - 1; j ++) {
                     polyline = L.polyline([layer1[count][j], layer1[count][j + 1]], {color: '#3388ff', opacity: 1, weight: 2}).addTo(map);
+                    map.almostOver.addLayer(polyline);
+                    map.on('almost:click', function(e) {
+                        var layer = e.layer;
+                        if (layer.openPopup) {
+                            layer.fire('click', e);
+                        }
+                    });
+                    // map.on('almost:over', function (e) {
+                    //     $(".leaflet-mouse-marker").css ({
+                    //         'cursor': 'copy'
+                    //     });
+                    // });
+                    // map.on('almost:out', function(e) {
+                    //     crosshair();
+                    // });
                     polyline.pgindex = count;
                     polyline.index = j;
                     polyline.status = 1;
@@ -8400,6 +8487,16 @@
 
                     if (j == layer1[count].length - 2) {
                         polyline = L.polyline([layer1[count][j + 1], layer1[count][0]], {color: '#3388ff', opacity: 1, weight: 2}).addTo(map);                         
+                        map.almostOver.addLayer(polyline);
+                        map.on('almost:click', function(e) {
+                            var layer = e.layer;
+                            if (layer.openPopup) {
+                                layer.fire('click', e);
+                            }
+                        });
+                        // map.on('almost:over', function (e) {
+                        //     $('html,body').css('cursor','crosshair');
+                        // });
                         polyline.pgindex = count;
                         polyline.index = j;
                         polyline.status = 1;
@@ -8560,6 +8657,13 @@
                 }
                 for (var j = 0; j < layer2[count].length - 1; j ++) {
                     polyline = L.polyline([layer2[count][j], layer2[count][j + 1]], {color: '#3388ff', opacity: 1, weight: 2}).addTo(map);
+                    map.almostOver.addLayer(polyline);
+                    map.on('almost:click', function(e) {
+                        var layer = e.layer;
+                        if (layer.openPopup) {
+                            layer.fire('click', e);
+                        }
+                    });
                     polyline.pgindex = count;
                     polyline.index = j;
                     polyline.status = 1;
@@ -8625,6 +8729,13 @@
 
                     if (j == layer2[count].length - 2) {
                         polyline = L.polyline([layer2[count][j + 1], layer2[count][0]], {color: '#3388ff', opacity: 1, weight: 2}).addTo(map);                         
+                        map.almostOver.addLayer(polyline);
+                        map.on('almost:click', function(e) {
+                            var layer = e.layer;
+                            if (layer.openPopup) {
+                                layer.fire('click', e);
+                            }
+                        });
                         polyline.pgindex = count;
                         polyline.index = j;
                         polyline.status = 1;
@@ -8785,6 +8896,13 @@
                 }
                 for (var j = 0; j < layer3[count].length - 1; j ++) {
                     polyline = L.polyline([layer3[count][j], layer3[count][j + 1]], {color: '#3388ff', opacity: 1, weight: 2}).addTo(map);
+                    map.almostOver.addLayer(polyline);
+                    map.on('almost:click', function(e) {
+                        var layer = e.layer;
+                        if (layer.openPopup) {
+                            layer.fire('click', e);
+                        }
+                    });
                     polyline.pgindex = count;
                     polyline.index = j;
                     polyline.status = 1;
@@ -8850,6 +8968,13 @@
 
                     if (j == layer3[count].length - 2) {
                         polyline = L.polyline([layer3[count][j + 1], layer3[count][0]], {color: '#3388ff', opacity: 1, weight: 2}).addTo(map);                         
+                        map.almostOver.addLayer(polyline);
+                        map.on('almost:click', function(e) {
+                            var layer = e.layer;
+                            if (layer.openPopup) {
+                                layer.fire('click', e);
+                            }
+                        });
                         polyline.pgindex = count;
                         polyline.index = j;
                         polyline.status = 1;
@@ -9010,6 +9135,13 @@
                 }
                 for (var j = 0; j < layer4[count].length - 1; j ++) {
                     polyline = L.polyline([layer4[count][j], layer4[count][j + 1]], {color: '#3388ff', opacity: 1, weight: 2}).addTo(map);
+                    map.almostOver.addLayer(polyline);
+                    map.on('almost:click', function(e) {
+                        var layer = e.layer;
+                        if (layer.openPopup) {
+                            layer.fire('click', e);
+                        }
+                    });
                     polyline.pgindex = count;
                     polyline.index = j;
                     polyline.status = 1;
@@ -9075,6 +9207,13 @@
 
                     if (j == layer4[count].length - 2) {
                         polyline = L.polyline([layer4[count][j + 1], layer4[count][0]], {color: '#3388ff', opacity: 1, weight: 2}).addTo(map);                         
+                        map.almostOver.addLayer(polyline);
+                        map.on('almost:click', function(e) {
+                            var layer = e.layer;
+                            if (layer.openPopup) {
+                                layer.fire('click', e);
+                            }
+                        });
                         polyline.pgindex = count;
                         polyline.index = j;
                         polyline.status = 1;
@@ -9235,6 +9374,13 @@
                 }
                 for (var j = 0; j < layer5[count].length - 1; j ++) {
                     polyline = L.polyline([layer5[count][j], layer5[count][j + 1]], {color: '#3388ff', opacity: 1, weight: 2}).addTo(map);
+                    map.almostOver.addLayer(polyline);
+                    map.on('almost:click', function(e) {
+                        var layer = e.layer;
+                        if (layer.openPopup) {
+                            layer.fire('click', e);
+                        }
+                    });
                     polyline.pgindex = count;
                     polyline.index = j;
                     polyline.status = 1;
@@ -9300,6 +9446,13 @@
 
                     if (j == layer5[count].length - 2) {
                         polyline = L.polyline([layer5[count][j + 1], layer5[count][0]], {color: '#3388ff', opacity: 1, weight: 2}).addTo(map);                         
+                        map.almostOver.addLayer(polyline);
+                        map.on('almost:click', function(e) {
+                            var layer = e.layer;
+                            if (layer.openPopup) {
+                                layer.fire('click', e);
+                            }
+                        });
                         polyline.pgindex = count;
                         polyline.index = j;
                         polyline.status = 1;
