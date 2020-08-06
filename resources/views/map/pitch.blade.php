@@ -1,7 +1,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>RoofRuler Pitch Tool</title>
+    <title>Roof Ruler Pitch Tool</title>
     <link rel="shortcut icon" href="{{ asset("/bower_components/AdminLTE/dist/img/icon.png") }}" type="image/x-icon"/>
     <script src="https://browser.sentry-cdn.com/5.4.0/bundle.min.js" crossorigin="anonymous"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key={{env('GOOGLE_KEY')}}&v=3.exp&signed_in=true"></script>

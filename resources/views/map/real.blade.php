@@ -266,8 +266,8 @@
 
         <div class="col-md-1 zoom-rotate">
             <div class="col-md-12 zoom">
-                <a class="btn cancel" style="border: none; width: 47%; color: #fff; padding-left: 0; padding-right: 0" onclick="zoomin()" title="Zoom In">ZoomIn</a>
-                <a class="btn cancel" style="border: none; width: 50%; color: #fff; padding-left: 0; padding-right: 0" onclick="zoomout()" title="Zoom Out">ZoomOut</a> 
+                <a class="btn cancel" id="zoomin-btn" onclick="zoomin()" title="Zoom In">ZoomIn</a>
+                <a class="btn cancel" id="zoomout-btn" onclick="zoomout()" title="Zoom Out">ZoomOut</a> 
             </div>
             <!-- <div class="col-md-12 rorate">
                 <a class="btn cancel" style="border: none; width: 20%; color: #fff; padding-left: 0; padding-right: 0" onclick="rotateleft(-1)" title="Rotate Left (1 degree)">L1</a>
@@ -278,22 +278,22 @@
         </div>
 
         <div class="col-md-2 tool-bar">
-            <!-- <div class="col-md-12 save">
-                <a class="btn cancel" style="border: none; width: 47%; color: #fff" title="Cancel">Cancel</a>
-                <a class="btn cancel" style="border: none; width: 50%; color: #fff" title="Save">Save</a>
+            <div class="col-md-12 save">
+                <a class="btn cancel" id="cancel-btn" title="Cancel" onclick="cancel()">Cancel</a>
+                <a class="btn cancel" id="save-btn" title="Save" onclick="save()">Save</a>
             </div>
-            <div class="col-md-12 undo">
+            <!-- <div class="col-md-12 undo">
                 <a class="btn cancel" style="border: none; width: 47%; color: #fff" title="Undo">Undo</a>
                 <a class="btn cancel" style="border: none; width: 50%; color: #fff" title="Redo">Redo</a>
-            </div> -->
+            </div>-->
             <div class="col-md-12 tools">
-                <a class="btn cancel" style="border: none; width: 30%; color: #fff" title="Toggle Snapping">Snapping</a>
-                <a class="btn cancel" style="border: none; width: 33%; color: #fff" onclick="showgrid()" title="Show Grid">Grid</a>
-                <a class="btn cancel" style="border: none; width: 33%; color: #fff" onclick="crosshair()" title="Cross Hair">CrossHair</a>
+                <a class="btn cancel" id="snap-btn" title="Toggle Snapping">Snapping</a>
+                <a class="btn cancel" id="grid-btn" onclick="showgrid()" title="Show Grid">Grid</a>
+                <a class="btn cancel" id="cross-btn" onclick="crosshair()" title="Cross Hair">CrossHair</a>
             </div>
         </div>
         <div id="grid" class="col-md-12" style="pointer-events: none;"></div>
-        <div id="map" class="col-md-12" style="height: 860px; background-color: green">
+        <div id="map" class="col-md-12" style="height: 860px;">
             <form id="download_form" class="form-horizontal" role="form" method="POST" action="{{ route('map.download') }}">
                 {{ csrf_field() }}    
                 <input type="hidden" id="type" name="type">
@@ -521,6 +521,7 @@
 <script src="{{ asset('js/leaflet.draw.js') }}"></script>
 <script src="{{ asset('js/geometryutil.js') }}"></script>
 <script src="{{ asset('js/leaflet.almostover.js') }}"></script>
+<script src="{{ asset('js/loading-spinner.js') }}"></script>
 <script type="text/javascript">
     var crossHairStatus = false;
     var pixelInchRatio1 = 0;
@@ -531,12 +532,13 @@
         distance = distance * 1000;
     }
     var type = "{{$type}}";
-    var pixelInchRatio = distance / pixel, pixelInchRatio1 = distance / pixel;
+    var pixelInchRatio = distance * 39.3701 / pixel, pixelInchRatio1 = distance * 39.3701 / pixel;
 
     var degree = 0, pitchVal = 0;
     var totalArea = 0;
     var dormerStatus = false, twolayerStatus = false, twostoryStatus = false, lowslopeStatus = false;
-    var showgridStatus = false, grid = null;;
+    var showgridStatus = false, grid = null;
+    var polygonAreas = [], initialData = [];
     var polylines = [], deleteEdgeStatus = false, lineColor = null, changeLineStatus = false, lineType = 'Unspecified';
     var removefacetStatus = false, setpitchStatus = false, removepitchStatus = false;;
     var layer1_lines = [], layer2_lines = [], layer3_lines = [], layer4_lines = [], layer5_lines = [];
@@ -577,24 +579,25 @@
             deleteModal.style.display = "none";
     }
 
-    $(document).ready(function(){
+    $(document).ready(function() {
+        showLoading();
         $('#address').text('{{$address}}');
         if (type == "google") {
             map = L.map('map', {
                 editable: true, 
                 crs: L.CRS.Simple,
-                maxZoom: 1,
+                maxZoom: 3,
                 minZoom: -1,
             });
             map.doubleClickZoom.disable();
-            var bounds = [[0, 0], [300, 300]];
+            var bounds = [[0, 0], [1300, 1300]];
             var filePath = "https://maps.googleapis.com/maps/api/staticmap?center={{$lat}},{{$lng}}&zoom={{$zoom}}&size=800x600&maptype=satellite&key={{env('GOOGLE_IMAGE_KEY')}}";
             $("#top_image").val("https://maps.googleapis.com/maps/api/staticmap?center={{$lat}},{{$lng}}&zoom={{$zoom}}&size=800x600&maptype=satellite&key={{env('GOOGLE_IMAGE_KEY')}}");
         } else if (type == "near") {
             map = L.map('map', {
                 editable: true, 
                 crs: L.CRS.Simple,
-                maxZoom: 1,
+                maxZoom: 3,
                 minZoom: -1,
             });
             map.doubleClickZoom.disable();
@@ -623,7 +626,6 @@
         });
         map.addControl(drawControl);
         myPolylineDrawHandler =  new L.Draw.Polygon(map, drawControl.options.polygon);
-
         //Make Facet tools
         for (var i = 0; i < 101; i ++) {
             $('.facets').append("<button class='col-md-12' id='pitch-btn' onclick='setPitch(" + i+""+ ")'> <div class='col-md-4'></div><div class='col-md-2'><p id='tool-name'>" + i+"/12" + "</p></div><div class='col-md-6'><i class='fa fa-arrows-alt' style='font-size: 12px'></i></div></button>");
@@ -844,14 +846,10 @@
                             layer.fire('click', e);
                         }
                     });
-                    // map.on('almost:over', function (e) {
-                    //     $(".leaflet-mouse-marker").css ({
-                    //         'cursor': 'copy'
-                    //     });
-                    // });
-                    // map.on('almost:out', function(e) {
-                    //     crosshair();
-                    // });
+                    map.on('almost:over', function (e) {
+                    });
+                    map.on('almost:out', function(e) {
+                    });
                     polyline.pgindex = count;
                     polyline.index = j;
                     polyline.status = 1;
@@ -924,11 +922,12 @@
                                 layer.fire('click', e);
                             }
                         });
-                        // map.on('almost:over', function (e) {
-                        //     $('html,body').css('cursor','crosshair');
-                        // });
+                        map.on('almost:over', function (e) {
+                        });
+                        map.on('almost:out', function(e) {
+                        });
                         polyline.pgindex = count;
-                        polyline.index = j;
+                        polyline.index = j + 1;
                         polyline.status = 1;
                         polyline.color = '#3388ff';
                         polyline.length = mark1[polyline.pgindex][polyline.index + 1].editing._marker.options.icon.options.html;
@@ -940,8 +939,8 @@
                                 e.target.status = 0;
                                 map.removeLayer(e.target);
 
-                                map.removeLayer(mark1[e.target.pgindex][e.target.index + 1]);
-                                mark1[e.target.pgindex][e.target.index + 1].status = 0;
+                                map.removeLayer(mark1[e.target.pgindex][e.target.index]);
+                                mark1[e.target.pgindex][e.target.index].status = 0;
 
                                 map.removeLayer(mark1[e.target.pgindex][mark1[e.target.pgindex].length - 1]);
                                 mark1[e.target.pgindex][mark1[e.target.pgindex].length - 1].status = 0;
@@ -1167,7 +1166,7 @@
                             }
                         });
                         polyline.pgindex = count;
-                        polyline.index = j;
+                        polyline.index = j + 1;
                         polyline.status = 1;
                         polyline.color = '#3388ff';
                         polyline.length = mark2[polyline.pgindex][polyline.index + 1].editing._marker.options.icon.options.html;
@@ -1179,8 +1178,8 @@
                                 e.target.status = 0;
                                 map.removeLayer(e.target);
 
-                                map.removeLayer(mark2[e.target.pgindex][e.target.index + 1]);
-                                mark2[e.target.pgindex][e.target.index + 1].status = 0;
+                                map.removeLayer(mark2[e.target.pgindex][e.target.index]);
+                                mark2[e.target.pgindex][e.target.index].status = 0;
 
                                 map.removeLayer(mark2[e.target.pgindex][mark2[e.target.pgindex].length - 1]);
                                 mark2[e.target.pgindex][mark2[e.target.pgindex].length - 1].status = 0;
@@ -1406,7 +1405,7 @@
                             }
                         });
                         polyline.pgindex = count;
-                        polyline.index = j;
+                        polyline.index = j + 1;
                         polyline.status = 1;
                         polyline.color = '#3388ff';
                         polyline.length = mark3[polyline.pgindex][polyline.index + 1].editing._marker.options.icon.options.html;
@@ -1418,8 +1417,8 @@
                                 e.target.status = 0;
                                 map.removeLayer(e.target);
 
-                                map.removeLayer(mark3[e.target.pgindex][e.target.index + 1]);
-                                mark3[e.target.pgindex][e.target.index + 1].status = 0;
+                                map.removeLayer(mark3[e.target.pgindex][e.target.index]);
+                                mark3[e.target.pgindex][e.target.index].status = 0;
 
                                 map.removeLayer(mark3[e.target.pgindex][mark3[e.target.pgindex].length - 1]);
                                 mark3[e.target.pgindex][mark3[e.target.pgindex].length - 1].status = 0;
@@ -1645,7 +1644,7 @@
                             }
                         });
                         polyline.pgindex = count;
-                        polyline.index = j;
+                        polyline.index = j + 1;
                         polyline.status = 1;
                         polyline.color = '#3388ff';
                         polyline.length = mark4[polyline.pgindex][polyline.index + 1].editing._marker.options.icon.options.html;
@@ -1657,8 +1656,8 @@
                                 e.target.status = 0;
                                 map.removeLayer(e.target);
 
-                                map.removeLayer(mark4[e.target.pgindex][e.target.index + 1]);
-                                mark4[e.target.pgindex][e.target.index + 1].status = 0;
+                                map.removeLayer(mark4[e.target.pgindex][e.target.index]);
+                                mark4[e.target.pgindex][e.target.index].status = 0;
 
                                 map.removeLayer(mark4[e.target.pgindex][mark4[e.target.pgindex].length - 1]);
                                 mark4[e.target.pgindex][mark4[e.target.pgindex].length - 1].status = 0;
@@ -1884,7 +1883,7 @@
                             }
                         });
                         polyline.pgindex = count;
-                        polyline.index = j;
+                        polyline.index = j + 1;
                         polyline.status = 1;
                         polyline.color = '#3388ff';
                         polyline.length = mark5[polyline.pgindex][polyline.index + 1].editing._marker.options.icon.options.html;
@@ -1896,8 +1895,8 @@
                                 e.target.status = 0;
                                 map.removeLayer(e.target);
 
-                                map.removeLayer(mark5[e.target.pgindex][e.target.index + 1]);
-                                mark5[e.target.pgindex][e.target.index + 1].status = 0;
+                                map.removeLayer(mark5[e.target.pgindex][e.target.index]);
+                                mark5[e.target.pgindex][e.target.index].status = 0;
 
                                 map.removeLayer(mark5[e.target.pgindex][mark5[e.target.pgindex].length - 1]);
                                 mark5[e.target.pgindex][mark5[e.target.pgindex].length - 1].status = 0;
@@ -2501,6 +2500,8 @@
 
         document.addEventListener('mousedown', handleMouseDown);
         document.addEventListener('mouseup', handleMouseUp);
+
+        hideLoading();
     });
 
     function downloadType() {
@@ -2675,6 +2676,7 @@
     }
 
     function createImage() {
+        showLoading();
         var svg = $("#my-svg");
         svg.attr('width', 1592);
         svg.attr('height', 896);
@@ -3054,7 +3056,7 @@
     }
 
     function createImage3() {
-        var polygonAreas = [];
+        polygonAreas = [];
         var svg = $("#my-svg3");
         svg.attr('width', 1592);
         svg.attr('height', 896);
@@ -6683,6 +6685,12 @@
                         marker.status = 1;
                         mark1[e.target.index][mark1[e.target.index].length - 1] = marker;
 
+                        var totalArea = 0;
+                        for (var i = 0; i < mark1.length; i ++) {
+                            totalArea += parseInt(mark1[i][mark1[i].length - 1].dragging._marker.options.icon.options.html);
+                        }
+                        $("#totalArea").text(totalArea);
+
                         e.target.pitch = pitchVal;
                         setpitchStatus = false;
                     }
@@ -6821,6 +6829,12 @@
                         marker.status = 1;
                         mark2[e.target.index][mark2[e.target.index].length - 1] = marker;
 
+                        var totalArea = 0;
+                        for (var i = 0; i < mark2.length; i ++) {
+                            totalArea += parseInt(mark2[i][mark2[i].length - 1].dragging._marker.options.icon.options.html);
+                        }
+                        $("#totalArea").text(totalArea);
+
                         e.target.pitch = pitchVal;
                         setpitchStatus = false;
                     }
@@ -6956,6 +6970,12 @@
                         }).addTo(map);
                         marker.status = 1;
                         mark3[e.target.index][mark3[e.target.index].length - 1] = marker;
+
+                        var totalArea = 0;
+                        for (var i = 0; i < mark3.length; i ++) {
+                            totalArea += parseInt(mark3[i][mark3[i].length - 1].dragging._marker.options.icon.options.html);
+                        }
+                        $("#totalArea").text(totalArea);
 
                         e.target.pitch = pitchVal;
                         setpitchStatus = false;
@@ -7094,6 +7114,12 @@
                         marker.status = 1;
                         mark4[e.target.index][mark4[e.target.index].length - 1] = marker;
 
+                        var totalArea = 0;
+                        for (var i = 0; i < mark4.length; i ++) {
+                            totalArea += parseInt(mark4[i][mark4[i].length - 1].dragging._marker.options.icon.options.html);
+                        }
+                        $("#totalArea").text(totalArea);
+
                         e.target.pitch = pitchVal;
                         setpitchStatus = false;
                     }
@@ -7230,6 +7256,12 @@
                         }).addTo(map);
                         marker.status = 1;
                         mark5[e.target.index][mark5[e.target.index].length - 1] = marker;
+
+                        var totalArea = 0;
+                        for (var i = 0; i < mark5.length; i ++) {
+                            totalArea += parseInt(mark5[i][mark5[i].length - 1].dragging._marker.options.icon.options.html);
+                        }
+                        $("#totalArea").text(totalArea);
 
                         e.target.pitch = pitchVal;
                         setpitchStatus = false;
@@ -7891,7 +7923,7 @@
         map.addLayer(drawnItems);
 
         deleteModal.style.display = "none";
-        $("#totalArea").text(0);
+        // $("#totalArea").text(0);
     }
 
     function resetData() {
@@ -8017,6 +8049,344 @@
         } else if (faceTabStatus) {
             $("#facet-tab").click();
             $("#facet-tab").focus();
+        }
+    }
+
+    function showLoading() {
+        Spinner();
+        Spinner.show();
+    }
+
+    function hideLoading() {
+        Spinner.hide();
+    }
+
+    function save() {
+        showLoading();
+        var lineInfo = [];
+        var polygonInfo = [];
+        var markInfo = [];
+        for (var i = 0; i < layer1_lines.length; i ++) {
+            lineInfo.push({layerId: 1, pos: {lat0: layer1_lines[i]._latlngs[0].lat, lng0: layer1_lines[i]._latlngs[0].lng, lat1: layer1_lines[i]._latlngs[1].lat, lng1: layer1_lines[i]._latlngs[1].lng}, pgIdx: layer1_lines[i].pgindex, length: layer1_lines[i].length, color: layer1_lines[i].color, type: layer1_lines[i].type, status: layer1_lines[i].status, index: layer1_lines[i].index});
+        }
+
+        for (var i = 0; i < layer2_lines.length; i ++) {
+            lineInfo.push({layerId: 1, pos: {lat0: layer2_lines[i]._latlngs[0].lat, lng0: layer2_lines[i]._latlngs[0].lng, lat1: layer2_lines[i]._latlngs[1].lat, lng1: layer2_lines[i]._latlngs[1].lng}, pgIdx: layer2_lines[i].pgindex, length: layer2_lines[i].length, color: layer2_lines[i].color, type: layer2_lines[i].type, status: layer2_lines[i].status});
+        }
+
+        for (var i = 0; i < layer3_lines.length; i ++) {
+            lineInfo.push({layerId: 1, pos: {lat0: layer3_lines[i]._latlngs[0].lat, lng0: layer3_lines[i]._latlngs[0].lng, lat1: layer3_lines[i]._latlngs[1].lat, lng1: layer3_lines[i]._latlngs[1].lng}, pgIdx: layer3_lines[i].pgindex, length: layer3_lines[i].length, color: layer3_lines[i].color, type: layer3_lines[i].type, status: layer3_lines[i].status});
+        }
+
+        for (var i = 0; i < layer4_lines.length; i ++) {
+            lineInfo.push({layerId: 1, pos: {lat0: layer4_lines[i]._latlngs[0].lat, lng0: layer4_lines[i]._latlngs[0].lng, lat1: layer4_lines[i]._latlngs[1].lat, lng1: layer4_lines[i]._latlngs[1].lng}, pgIdx: layer4_lines[i].pgindex, length: layer4_lines[i].length, color: layer4_lines[i].color, type: layer4_lines[i].type, status: layer4_lines[i].status});
+        }
+
+        for (var i = 0; i < layer5_lines.length; i ++) {
+            lineInfo.push({layerId: 1, pos: {lat0: layer5_lines[i]._latlngs[0].lat, lng0: layer5_lines[i]._latlngs[0].lng, lat1: layer5_lines[i]._latlngs[1].lat, lng1: layer5_lines[i]._latlngs[1].lng}, pgIdx: layer5_lines[i].pgindex, length: layer5_lines[i].length, color: layer5_lines[i].color, type: layer5_lines[i].type, status: layer5_lines[i].status});
+        }
+
+        for (var i = 0; i < layer1_polygon.length; i ++) {
+            polygonInfo.push({layerId: 1, pgIdx: (layer1_polygon[i].index == undefined ? "" : layer1_polygon[i].index), labelMarkers: (layer1_polygon[i].labelMarkers == undefined ? "" : layer1_polygon[i].labelMarkers.join()), fillColor: (layer1_polygon[i].fillColor == undefined ? "" : layer1_polygon[i].fillColor), pitch: (layer1_polygon[i].pitch == undefined ? "" : layer1_polygon[i].pitch), edindex: layer1_polygon[i].edindex, pos: layer1_polygon[i]._latlngs.join()});
+        }
+
+        for (var i = 0; i < layer2_polygon.length; i ++) {
+            polygonInfo.push({layerId: 1, pgIdx: (layer2_polygon[i].index == undefined ? "" : layer2_polygon[i].index), labelMarkers: (layer2_polygon[i].labelMarkers == undefined ? "" : layer2_polygon[i].labelMarkers.join()), fillColor: (layer2_polygon[i].fillColor == undefined ? "" : layer2_polygon[i].fillColor), pitch: (layer2_polygon[i].pitch == undefined ? "" : layer2_polygon[i].pitch), edindex: layer2_polygon[i].edindex, pos: layer2_polygon[i]._latlngs.join()});
+        }
+
+        for (var i = 0; i < layer3_polygon.length; i ++) {
+            polygonInfo.push({layerId: 1, pgIdx: (layer3_polygon[i].index == undefined ? "" : layer3_polygon[i].index), labelMarkers: (layer3_polygon[i].labelMarkers == undefined ? "" : layer3_polygon[i].labelMarkers.join()), fillColor: (layer3_polygon[i].fillColor == undefined ? "" : layer3_polygon[i].fillColor), pitch: (layer3_polygon[i].pitch == undefined ? "" : layer3_polygon[i].pitch), edindex: layer3_polygon[i].edindex, pos: layer3_polygon[i]._latlngs.join()});
+        }
+
+        for (var i = 0; i < layer4_polygon.length; i ++) {
+            polygonInfo.push({layerId: 1, pgIdx: (layer4_polygon[i].index == undefined ? "" : layer4_polygon[i].index), labelMarkers: (layer4_polygon[i].labelMarkers == undefined ? "" : layer4_polygon[i].labelMarkers.join()), fillColor: (layer4_polygon[i].fillColor == undefined ? "" : layer4_polygon[i].fillColor), pitch: (layer4_polygon[i].pitch == undefined ? "" : layer4_polygon[i].pitch), edindex: layer4_polygon[i].edindex, pos: layer4_polygon[i]._latlngs.join()});
+        }
+
+        for (var i = 0; i < layer5_polygon.length; i ++) {
+            polygonInfo.push({layerId: 1, pgIdx: (layer5_polygon[i].index == undefined ? "" : layer5_polygon[i].index), labelMarkers: (layer5_polygon[i].labelMarkers == undefined ? "" : layer5_polygon[i].labelMarkers.join()), fillColor: (layer5_polygon[i].fillColor == undefined ? "" : layer5_polygon[i].fillColor), pitch: (layer5_polygon[i].pitch == undefined ? "" : layer5_polygon[i].pitch), edindex: layer5_polygon[i].edindex, pos: layer5_polygon[i]._latlngs.join()});
+        }
+
+        for (var i = 0; i < mark1.length; i ++) {
+            for (var j = 0; j < mark1[i].length; j ++) {
+                markInfo.push({index: i, layerId: 1, text: mark1[i][j].editing._marker.options.icon.options.html, pos: {lat: mark1[i][j]._latlng.lat, lng: mark1[i][j]._latlng.lng}, status: mark1[i][j].status});
+            }
+        }
+
+        for (var i = 0; i < mark2.length; i ++) {
+            for (var j = 0; j < mark2[i].length; j ++) {
+                markInfo.push({index: i, layerId: 2, text: mark2[i][j].editing._marker.options.icon.options.html, pos: {lat: mark2[i][j]._latlng.lat, lng: mark2[i][j]._latlng.lng}, status: mark2[i][j].status});
+            }
+        }
+
+        for (var i = 0; i < mark3.length; i ++) {
+            for (var j = 0; j < mark3[i].length; j ++) {
+                markInfo.push({index: i, layerId: 3, text: mark3[i][j].editing._marker.options.icon.options.html, pos: {lat: mark3[i][j]._latlng.lat, lng: mark3[i][j]._latlng.lng}, status: mark3[i][j].status});
+            }
+        }
+
+        for (var i = 0; i < mark4.length; i ++) {
+            for (var j = 0; j < mark4[i].length; j ++) {
+                markInfo.push({index: i, layerId: 4, text: mark4[i][j].editing._marker.options.icon.options.html, pos: {lat: mark4[i][j]._latlng.lat, lng: mark4[i][j]._latlng.lng}, status: mark4[i][j].status});
+            }
+        }
+
+        for (var i = 0; i < mark5.length; i ++) {
+            for (var j = 0; j < mark5[i].length; j ++) {
+                markInfo.push({index: i, layerId: 5, text: mark5[i][j].editing._marker.options.icon.options.html, pos: {lat: mark5[i][j]._latlng.lat, lng: mark5[i][j]._latlng.lng}, status: mark5[i][j].status});
+            }
+        }
+
+        var info = {
+            userId: '{{ Auth::user()->id }}',
+            imageInfo: $("#top_image").val(),
+            Address: '{{$address}}',
+            lineInfo: lineInfo,
+            polygonInfo: polygonInfo,
+            markInfo: markInfo
+        }
+
+        var token = '{{csrf_field()}}'.split('value="');
+        token = token[1].split('">');
+
+        $.ajax({
+            url: '/map/record',
+            type: 'post',
+            data: {
+                _token: token[0],
+                info: info,
+            },
+            success: function(res) {
+                hideLoading();
+            }
+        });
+    }
+
+    function cancel() {
+        var token = '{{csrf_field()}}'.split('value="');
+        token = token[1].split('">');
+        $.ajax({
+            url: '/map/load',
+            type: 'post',
+            data: {
+                _token: token[0],
+            },
+            success: function(res) {
+                var res = JSON.parse(res);
+                initDraw(res);
+            }
+        });   
+    }
+
+    function initDraw(data) {
+        console.log(data);
+        var markers = data[2];
+        var lines = data[3];
+        var polygons = data[4];
+
+        var mark1_text = markers[0];
+        var mark2_text = markers[1];
+        var mark3_text = markers[2];
+        var mark4_text = markers[3];
+        var mark5_text = markers[4];
+
+        for (var i = 0; i < mark1_text.length; i ++) {
+            for (var j = 0; j < mark1_text[i].length; j ++) {
+                var marker = L.marker([mark1_text[i][j].lat, mark1_text[i][j].lng], {
+                    icon: L.divIcon({
+                        html: mark1_text[i][j].text,
+                        className: 'text-below-marker',
+                    })
+                }).addTo(map);
+                marker.status = mark1_text[i][j].status;
+                mark1_temp.push(marker);
+            }
+            mark1.push(mark1_temp);
+            mark1_temp = [];
+        }
+
+        for (var i = 0; i < mark2_text.length; i ++) {
+            for (var j = 0; j < mark2_text[i].length; j ++) {
+                var marker = L.marker([mark2_text[i][j].lat, mark2_text[i][j].lng], {
+                    icon: L.divIcon({
+                        html: mark2_text[i][j].text,
+                        className: 'text-below-marker',
+                    })
+                }).addTo(map);
+                marker.status = mark2_text[i][j].status;
+                mark2_temp.push(marker);
+            }
+            mark2.push(mark2_temp);
+            mark2_temp = [];
+        }
+
+        for (var i = 0; i < mark3_text.length; i ++) {
+            for (var j = 0; j < mark3_text[i].length; j ++) {
+                var marker = L.marker([mark3_text[i][j].lat, mark3_text[i][j].lng], {
+                    icon: L.divIcon({
+                        html: mark3_text[i][j].text,
+                        className: 'text-below-marker',
+                    })
+                }).addTo(map);
+                marker.status = mark3_text[i][j].status;
+                mark3_temp.push(marker);
+            }
+            mark3.push(mark3_temp);
+            mark3_temp = [];
+        }
+
+        for (var i = 0; i < mark4_text.length; i ++) {
+            for (var j = 0; j < mark4_text[i].length; j ++) {
+                var marker = L.marker([mark4_text[i][j].lat, mark4_text[i][j].lng], {
+                    icon: L.divIcon({
+                        html: mark4_text[i][j].text,
+                        className: 'text-below-marker',
+                    })
+                }).addTo(map);
+                marker.status = mark4_text[i][j].status;
+                mark4_temp.push(marker);
+            }
+            mark4.push(mark4_temp);
+            mark4_temp = [];
+        }
+
+        for (var i = 0; i < mark5_text.length; i ++) {
+            for (var j = 0; j < mark5_text[i].length; j ++) {
+                var marker = L.marker([mark5_text[i][j].lat, mark5_text[i][j].lng], {
+                    icon: L.divIcon({
+                        html: mark5_text[i][j].text,
+                        className: 'text-below-marker',
+                    })
+                }).addTo(map);
+                marker.status = mark5_text[i][j].status;
+                mark5_temp.push(marker);
+            }
+            mark5.push(mark5_temp);
+            mark5_temp = [];
+        }
+
+        for (var i = 0; i < lines.length; i ++) {
+            var pointA = new L.LatLng(lines[i].lat0, lines[i].lng0);
+            var pointB = new L.LatLng(lines[i].lat1, lines[i].lng1);
+            var pointList = [pointA, pointB];
+            var polyline = L.polyline(pointList, {color: lines[i].color, opacity: 1, weight: 2}).addTo(map);
+            map.almostOver.addLayer(polyline);
+            map.on('almost:click', function(e) {
+                var layer = e.layer;
+                if (layer.openPopup) {
+                    layer.fire('click', e);
+                }
+            });
+            map.on('almost:over', function (e) {
+            });
+            map.on('almost:out', function(e) {
+            });
+            polyline.pgindex = parseInt(lines[i].pgIdx);
+            polyline.index = parseInt(lines[i].index);
+            polyline.status = parseInt(lines[i].status);
+            polyline.color = lines[i].color;
+            polyline.length = lines[i].length;
+            polyline.type = lines[i].type;
+            if (lines[i].layer_id == "1")
+                layer1_lines.push(polyline);
+            else if(markers[i].layer_id == "2")
+                layer2_lines.push(polyline);
+            else if(markers[i].layer_id == "3")
+                layer3_lines.push(polyline);
+            else if(markers[i].layer_id == "4")
+                layer4_lines.push(polyline);
+            else if(markers[i].layer_id == "5")
+                layer5_lines.push(polyline);
+
+            polyline.on('click', function(e) {
+                if (deleteEdgeStatus) {
+                    e.target.status = 0;
+                    map.removeLayer(e.target);
+
+                    map.removeLayer(mark1[e.target.pgindex][e.target.index]);
+                    mark1[e.target.pgindex][e.target.index].status = 0;
+
+                    map.removeLayer(mark1[e.target.pgindex][mark1[e.target.pgindex].length - 1]);
+                    mark1[e.target.pgindex][mark1[e.target.pgindex].length - 1].status = 0;
+
+                    deleteEdgeStatus = !deleteEdgeStatus;
+                    changeLineStatus = false;
+                }
+
+                if (changeLineStatus) {
+                    var polygon = layer1_polygon[e.target.pgindex];
+                    var polygon_pitch = (polygon.pitch == undefined) ? 0 : polygon.pitch;
+                    if (polygon_pitch == 0) {
+                        e.target.type = lineType;
+                        e.target.color = lineColor;
+                        e.target.setStyle({
+                            color: lineColor
+                        });
+                        deleteEdgeStatus = false;
+                    } else {
+                        var original_length = mark1[e.target.pgindex][e.target.index].editing._marker.options.icon.options.html;
+                        original_length = original_length.split(" ");
+                        if (original_length.length > 1)
+                            original_length = parseInt(original_length[0])*12 + parseInt(original_length[1]);
+                        else
+                            original_length = parseInt(original_length[0])*12;
+                        var new_length = Math.round(Math.sqrt(Math.pow(12, 2) + Math.pow(polygon_pitch, 2))/12 * original_length);
+                        new_length = Math.floor(new_length/12) + "ft" + " " + new_length%12 + "in"
+                        
+                        var original_latlng = mark1[e.target.pgindex][e.target.index]._latlng;
+                        map.removeLayer(mark1[e.target.pgindex][e.target.index]);
+                        var marker = L.marker(original_latlng, {
+                            icon: L.divIcon({
+                                html: new_length,
+                                className: 'text-below-marker',
+                            })
+                        }).addTo(map);
+                        marker.status = 1;
+                        mark1[e.target.pgindex][e.target.index] = marker;
+                        e.target.type = lineType;
+                        e.target.length = mark1[e.target.pgindex][e.target.index].editing._marker.options.icon.options.html;
+                        e.target.color = lineColor;
+                        e.target.setStyle({
+                            color: lineColor
+                        });
+                        deleteEdgeStatus = false;
+                    }
+                }
+            });
+        }
+
+        for (var i = 0; i < polygons.length; i ++) {
+            var latlngs = polygons[i].latlngs;
+            var latlngsArr = latlngs.split("LatLng(");
+            var pointsArr = [];
+            for (var j = 1; j < latlngsArr.length; j ++) {
+                var pointStr = latlngsArr[j].split("),");
+                var point = new L.LatLng(pointStr[0].split(",")[0], pointStr[0].split(",")[1]);
+                pointsArr.push(point);
+            }
+
+            var polygon = L.polygon(pointsArr);
+            polygon.setStyle({color: (polygons[i].fillColor == "" ? "#3388ff" : polygons[i].fillColor), weight: 2});
+            polygon.edindex = parseInt(polygons[i].edindex);
+            polygon.fillColor = polygons[i].fillColor;
+            polygon.pitch = parseInt(polygons[i].pitch);
+            polygon.labelMarkers = polygons[i].labelMarkers.split(",");
+
+            if (polygons[i].layer_id == "1") {
+                layer1.push(polygon._latlngs);
+                layer1_polygon.push(polygon);
+            } else if (polygons[i].layer_id == "2") {
+                layer2.push(polygon._latlngs);
+                layer2_polygon.push(polygon);
+            } else if (polygons[i].layer_id == "3") {
+                layer3.push(polygon._latlngs);
+                layer3_polygon.push(polygon);
+            } else if (polygons[i].layer_id == "4") {
+                layer4.push(polygon._latlngs);
+                layer4_polygon.push(polygon);
+            } else if (polygons[i].layer_id == "5") {
+                layer5.push(polygon._latlngs);
+                layer5_polygon.push(polygon);
+            }
         }
     }
 
@@ -8186,7 +8556,7 @@
 
         map = L.map('map', { 
             crs: L.CRS.Simple,
-            maxZoom: 1,
+            maxZoom: 3,
             minZoom: -1
         });
         map.doubleClickZoom.disable();
@@ -8414,14 +8784,10 @@
                             layer.fire('click', e);
                         }
                     });
-                    // map.on('almost:over', function (e) {
-                    //     $(".leaflet-mouse-marker").css ({
-                    //         'cursor': 'copy'
-                    //     });
-                    // });
-                    // map.on('almost:out', function(e) {
-                    //     crosshair();
-                    // });
+                    map.on('almost:over', function (e) {
+                    });
+                    map.on('almost:out', function(e) {
+                    });
                     polyline.pgindex = count;
                     polyline.index = j;
                     polyline.status = 1;
@@ -8494,11 +8860,12 @@
                                 layer.fire('click', e);
                             }
                         });
-                        // map.on('almost:over', function (e) {
-                        //     $('html,body').css('cursor','crosshair');
-                        // });
+                        map.on('almost:over', function (e) {
+                        });
+                        map.on('almost:out', function(e) {
+                        });
                         polyline.pgindex = count;
-                        polyline.index = j;
+                        polyline.index = j + 1;
                         polyline.status = 1;
                         polyline.color = '#3388ff';
                         polyline.length = mark1[polyline.pgindex][polyline.index + 1].editing._marker.options.icon.options.html;
@@ -8510,8 +8877,8 @@
                                 e.target.status = 0;
                                 map.removeLayer(e.target);
 
-                                map.removeLayer(mark1[e.target.pgindex][e.target.index + 1]);
-                                mark1[e.target.pgindex][e.target.index + 1].status = 0;
+                                map.removeLayer(mark1[e.target.pgindex][e.target.index]);
+                                mark1[e.target.pgindex][e.target.index].status = 0;
 
                                 map.removeLayer(mark1[e.target.pgindex][mark1[e.target.pgindex].length - 1]);
                                 mark1[e.target.pgindex][mark1[e.target.pgindex].length - 1].status = 0;
@@ -8737,7 +9104,7 @@
                             }
                         });
                         polyline.pgindex = count;
-                        polyline.index = j;
+                        polyline.index = j + 1;
                         polyline.status = 1;
                         polyline.color = '#3388ff';
                         polyline.length = mark2[polyline.pgindex][polyline.index + 1].editing._marker.options.icon.options.html;
@@ -8749,8 +9116,8 @@
                                 e.target.status = 0;
                                 map.removeLayer(e.target);
 
-                                map.removeLayer(mark2[e.target.pgindex][e.target.index + 1]);
-                                mark2[e.target.pgindex][e.target.index + 1].status = 0;
+                                map.removeLayer(mark2[e.target.pgindex][e.target.index]);
+                                mark2[e.target.pgindex][e.target.index].status = 0;
 
                                 map.removeLayer(mark2[e.target.pgindex][mark2[e.target.pgindex].length - 1]);
                                 mark2[e.target.pgindex][mark2[e.target.pgindex].length - 1].status = 0;
@@ -8976,7 +9343,7 @@
                             }
                         });
                         polyline.pgindex = count;
-                        polyline.index = j;
+                        polyline.index = j + 1;
                         polyline.status = 1;
                         polyline.color = '#3388ff';
                         polyline.length = mark3[polyline.pgindex][polyline.index + 1].editing._marker.options.icon.options.html;
@@ -8988,8 +9355,8 @@
                                 e.target.status = 0;
                                 map.removeLayer(e.target);
 
-                                map.removeLayer(mark3[e.target.pgindex][e.target.index + 1]);
-                                mark3[e.target.pgindex][e.target.index + 1].status = 0;
+                                map.removeLayer(mark3[e.target.pgindex][e.target.index]);
+                                mark3[e.target.pgindex][e.target.index].status = 0;
 
                                 map.removeLayer(mark3[e.target.pgindex][mark3[e.target.pgindex].length - 1]);
                                 mark3[e.target.pgindex][mark3[e.target.pgindex].length - 1].status = 0;
@@ -9215,7 +9582,7 @@
                             }
                         });
                         polyline.pgindex = count;
-                        polyline.index = j;
+                        polyline.index = j + 1;
                         polyline.status = 1;
                         polyline.color = '#3388ff';
                         polyline.length = mark4[polyline.pgindex][polyline.index + 1].editing._marker.options.icon.options.html;
@@ -9227,8 +9594,8 @@
                                 e.target.status = 0;
                                 map.removeLayer(e.target);
 
-                                map.removeLayer(mark4[e.target.pgindex][e.target.index + 1]);
-                                mark4[e.target.pgindex][e.target.index + 1].status = 0;
+                                map.removeLayer(mark4[e.target.pgindex][e.target.index]);
+                                mark4[e.target.pgindex][e.target.index].status = 0;
 
                                 map.removeLayer(mark4[e.target.pgindex][mark4[e.target.pgindex].length - 1]);
                                 mark4[e.target.pgindex][mark4[e.target.pgindex].length - 1].status = 0;
@@ -9454,7 +9821,7 @@
                             }
                         });
                         polyline.pgindex = count;
-                        polyline.index = j;
+                        polyline.index = j + 1;
                         polyline.status = 1;
                         polyline.color = '#3388ff';
                         polyline.length = mark5[polyline.pgindex][polyline.index + 1].editing._marker.options.icon.options.html;
@@ -9466,8 +9833,8 @@
                                 e.target.status = 0;
                                 map.removeLayer(e.target);
 
-                                map.removeLayer(mark5[e.target.pgindex][e.target.index + 1]);
-                                mark5[e.target.pgindex][e.target.index + 1].status = 0;
+                                map.removeLayer(mark5[e.target.pgindex][e.target.index]);
+                                mark5[e.target.pgindex][e.target.index].status = 0;
 
                                 map.removeLayer(mark5[e.target.pgindex][mark5[e.target.pgindex].length - 1]);
                                 mark5[e.target.pgindex][mark5[e.target.pgindex].length - 1].status = 0;

@@ -786,3 +786,49 @@ h5 {
 	outline: white;
 }
 
+#save-btn {
+	border: none; 
+	width: 50%; 
+	color: #fff;
+}
+
+#cancel-btn {
+	border: none; 
+	width: 47%; 
+	color: #fff;
+}
+
+#zoomin-btn {
+	border: none; 
+	width: 47%; 
+	color: #fff; 
+	padding-left: 0; 
+	padding-right: 0;
+}
+
+#zoomout-btn {
+	border: none; 
+	width: 50%; 
+	color: #fff; 
+	padding-left: 0; 
+	padding-right: 0;
+}
+
+#snap-btn {
+	border: none; 
+	width: 30%; 
+	color: #fff;
+}
+
+#grid-btn {
+	border: none; 
+	width: 33%; 
+	color: #fff;
+}
+
+#cross-btn {
+	border: none; 
+	width: 33%; 
+	color: #fff;
+}
+

@@ -6,6 +6,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\DB;
 use App\User;
+use App\Map;
+use App\Line;
+use App\Mark;
+use App\Polygon;
 use PDF;
 
 class MapController extends Controller
@@ -49,12 +53,6 @@ class MapController extends Controller
         return view('map/create');
     }
 
-    public function google(Request $request)
-    {
-        $address = $request->input('address');
-        return view('map/real', ['address' => $address]);
-    }
-
     /**
      * Show the form for uploading a new image.
      *
@@ -63,6 +61,12 @@ class MapController extends Controller
     public function upload()
     {
         return view('map/upload');
+    }
+
+    public function google(Request $request)
+    {
+        $address = $request->input('address');
+        return view('map/real', ['address' => $address]);
     }
 
     public function pitch(Request $request)
@@ -256,13 +260,195 @@ class MapController extends Controller
 
             return Response::download($filename, $filename, $headers);
         } else if ($type == 'pdf') {
+            $result = null;
             $rootPath = base_path();
             $data = ['address' => $address, 'totalArea' => $totalArea, 'rootPath' => $rootPath, 'date' => $date[0].'-'.$date[1].'-'.$date[2], 'top_image' => $top_image, 'eaves' => $eaves, 'ridges' => $ridges, 'rakes' => $rakes, 'hips' => $hips, 'valleys' => $valleys, 'wall_flashing' => $wall_flashing, 'step_flahsing' => $step_flahsing, 'unspecified' => $unspecified, 'polygonAreas' => $polygonAreas];
             $pdf = PDF::loadView('map/pdfview', array('data' => $data));
             $pdf->setPaper([0,0,4000,660], 'landscape');
+
             return $pdf->download($address.'.pdf');
-            // return view('map/pdfview', array('data' => $data));
         }
+    }
+
+    public function record(Request $request)
+    {
+        $data = $request['info'];
+        $userId = $data['userId'];
+        $imageInfo = $data['imageInfo'];
+        $Address = $data['Address'];
+        $lineInfo = $data['lineInfo'];
+        $polygonInfo = $data['polygonInfo'];
+        $markInfo = $data['markInfo'];
+
+        Map::query()->truncate();
+        Line::query()->truncate();
+        Polygon::query()->truncate();
+        Mark::query()->truncate();
+
+        $map = Map::create([
+            'userid' => $userId,
+            'image' => $imageInfo,
+            'address' => $Address
+        ]);
+
+        var_dump($polygonInfo);
+
+        for ($i = 0; $i < count($lineInfo); $i ++) {
+            Line::create([
+                'map_id' => $map['id'],
+                'layer_id' => $lineInfo[$i]['layerId'],
+                'color' => $lineInfo[$i]['color'],
+                'length' => $lineInfo[$i]['length'],
+                'pgIdx' => $lineInfo[$i]['pgIdx'],
+                'status' => $lineInfo[$i]['status'],
+                'type' => $lineInfo[$i]['type'],
+                'lat0' => $lineInfo[$i]['pos']['lat0'],
+                'lng0' => $lineInfo[$i]['pos']['lng0'],
+                'lat1' => $lineInfo[$i]['pos']['lat1'],
+                'lng1' => $lineInfo[$i]['pos']['lng1'],
+                'index' => $lineInfo[$i]['index'],
+            ]);            
+        }
+
+        for ($i = 0; $i < count($polygonInfo); $i ++) {
+            Polygon::create([
+                'map_id' => $map['id'],
+                'layer_id' => $polygonInfo[$i]['layerId'],
+                'edindex' => $polygonInfo[$i]['edindex'],
+                'fillColor' => ($polygonInfo[$i]['fillColor'] == null) ? "" : $polygonInfo[$i]['fillColor'],
+                'pgIdx' => ($polygonInfo[$i]['pgIdx'] == null) ? "" : $polygonInfo[$i]['pgIdx'],
+                'pitch' => ($polygonInfo[$i]['pitch'] == null) ? "" : $polygonInfo[$i]['pitch'],
+                'labelMarkers' => ($polygonInfo[$i]['labelMarkers'] == null) ? "" : $polygonInfo[$i]['labelMarkers'],
+                'latlngs' => $polygonInfo[$i]['pos']
+            ]);            
+        }
+
+        for ($i = 0; $i < count($markInfo); $i ++) {
+            Mark::create([
+                'map_id' => $map['id'],
+                'index' => $markInfo[$i]['index'],
+                'layer_id' => $markInfo[$i]['layerId'],
+                'status' => $markInfo[$i]['status'],
+                'text' => $markInfo[$i]['text'],
+                'lat' => $markInfo[$i]['pos']['lat'],
+                'lng' => $markInfo[$i]['pos']['lng'],
+            ]);            
+        }
+
+        echo json_encode("success");
+    }
+
+    public function load(Request $request) 
+    {
+        $mapId = 1;
+        $map = Map::find($mapId);
+        $address = $map['address'];
+        $image = $map['image'];
+        $lines = Line::where('map_id', $mapId)->get();
+        $polygons = Polygon::where('map_id', $mapId)->get();
+
+        $layer1_marks = Mark::where('map_id', $mapId)->where('layer_id', '1')->get();
+        $layer2_marks = Mark::where('map_id', $mapId)->where('layer_id', '2')->get();
+        $layer3_marks = Mark::where('map_id', $mapId)->where('layer_id', '3')->get();
+        $layer4_marks = Mark::where('map_id', $mapId)->where('layer_id', '4')->get();
+        $layer5_marks = Mark::where('map_id', $mapId)->where('layer_id', '5')->get();
+
+        //////mark1
+        $indexArr1 = [];
+        for ($i = 0; $i < count($layer1_marks); $i ++) {
+            if (!in_array((int)$layer1_marks[$i]['index'], $indexArr1))
+                array_push($indexArr1, (int)$layer1_marks[$i]['index']);
+        }
+        $layer1_temp_marks = [];
+        $mark1 = [];
+        for ($i = 0; $i < count($indexArr1); $i ++) {
+            for ($j = 0; $j < count($layer1_marks); $j ++) {
+                if ($indexArr1[$i] == (int)$layer1_marks[$j]['index']) {
+                    array_push($layer1_temp_marks, $layer1_marks[$j]);
+                }
+            }
+            array_push($mark1, $layer1_temp_marks);
+            $layer1_temp_marks = [];
+        }
+        ////////-------mark1
+        //////mark2
+        $indexArr2 = [];
+        for ($i = 0; $i < count($layer2_marks); $i ++) {
+            if (!in_array((int)$layer2_marks[$i]['index'], $indexArr2))
+                array_push($indexArr2, (int)$layer2_marks[$i]['index']);
+        }
+        $layer2_temp_marks = [];
+        $mark2 = [];
+        for ($i = 0; $i < count($indexArr2); $i ++) {
+            for ($j = 0; $j < count($layer2_marks); $j ++) {
+                if ($indexArr2[$i] == (int)$layer2_marks[$j]['index']) {
+                    array_push($layer2_temp_marks, $layer2_marks[$j]);
+                }
+            }
+            array_push($mark2, $layer2_temp_marks);
+            $layer2_temp_marks = [];
+        }
+        ////////-------mark2
+        //////mark3
+        $indexArr3 = [];
+        for ($i = 0; $i < count($layer3_marks); $i ++) {
+            if (!in_array((int)$layer3_marks[$i]['index'], $indexArr3))
+                array_push($indexArr3, (int)$layer3_marks[$i]['index']);
+        }
+        $layer3_temp_marks = [];
+        $mark3 = [];
+        for ($i = 0; $i < count($indexArr3); $i ++) {
+            for ($j = 0; $j < count($layer3_marks); $j ++) {
+                if ($indexArr3[$i] == (int)$layer3_marks[$j]['index']) {
+                    array_push($layer3_temp_marks, $layer3_marks[$j]);
+                }
+            }
+            array_push($mark3, $layer3_temp_marks);
+            $layer3_temp_marks = [];
+        }
+        ////////-------mark3
+        //////mark4
+        $indexArr4 = [];
+        for ($i = 0; $i < count($layer4_marks); $i ++) {
+            if (!in_array((int)$layer4_marks[$i]['index'], $indexArr4))
+                array_push($indexArr4, (int)$layer4_marks[$i]['index']);
+        }
+        $layer4_temp_marks = [];
+        $mark4 = [];
+        for ($i = 0; $i < count($indexArr4); $i ++) {
+            for ($j = 0; $j < count($layer4_marks); $j ++) {
+                if ($indexArr4[$i] == (int)$layer4_marks[$j]['index']) {
+                    array_push($layer4_temp_marks, $layer4_marks[$j]);
+                }
+            }
+            array_push($mark4, $layer4_temp_marks);
+            $layer4_temp_marks = [];
+        }
+        ////////-------mark4
+        //////mark5
+        $indexArr5 = [];
+        for ($i = 0; $i < count($layer5_marks); $i ++) {
+            if (!in_array((int)$layer5_marks[$i]['index'], $indexArr5))
+                array_push($indexArr5, (int)$layer5_marks[$i]['index']);
+        }
+        $layer5_temp_marks = [];
+        $mark5 = [];
+        for ($i = 0; $i < count($indexArr5); $i ++) {
+            for ($j = 0; $j < count($layer5_marks); $j ++) {
+                if ($indexArr5[$i] == (int)$layer5_marks[$j]['index']) {
+                    array_push($layer5_temp_marks, $layer5_marks[$j]);
+                }
+            }
+            array_push($mark5, $layer5_temp_marks);
+            $layer5_temp_marks = [];
+        }
+        ////////-------mark5
+
+        $marks = [$mark1, $mark2, $mark3, $mark4, $mark5];
+
+        $results = [$address, $image, $marks, $lines, $polygons];
+
+        echo json_encode($results);
     }
 
     /**

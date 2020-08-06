@@ -37,7 +37,7 @@
                 <div class="col-md-7" id="google-body" style="padding-right: 0px">
                     <div class="col-md-12" id="google-map" style="height: 245px">
                     </div>
-                    <div id="scale" style="display: block;">
+                    <div id="scale" style="display: none;">
                         <div id="scale-value"></div>
                         <div id="scale-bar"></div>
                     </div>
@@ -80,6 +80,7 @@
 <div id="map" style="height: 860px"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/select2.js"></script>
+<script src="{{ asset('js/loading-spinner.js') }}"></script>
 <script type="text/javascript">
     $("#selectmap").select2({
         templateResult: formatState
@@ -229,14 +230,10 @@
         var infowindow = new google.maps.InfoWindow();
         var infowindowContent = document.getElementById('infowindow-content');
         infowindow.setContent(infowindowContent);
-        // var marker = new google.maps.Marker({
-        //     map: map,
-        //     anchorPoint: new google.maps.Point(0, -29)
-        // });
 
         autocomplete.addListener('place_changed', function() {
+            showLoading();
             infowindow.close();
-            // marker.setVisible(false);
             var place = autocomplete.getPlace();
             var lat = place.geometry.location.lat();
             var lng = place.geometry.location.lng();
@@ -254,8 +251,8 @@
                 map.setCenter(place.geometry.location);
                 map.setZoom(21);
             }
-            // marker.setPosition(place.geometry.location);
-            // marker.setVisible(true);
+
+            hideLoading();
 
             var address = '';
             if (place.address_components) {
@@ -269,27 +266,24 @@
             infowindowContent.children['place-icon'].src = place.icon;
             infowindowContent.children['place-name'].textContent = place.name;
             infowindowContent.children['place-address'].textContent = address;
-            // infowindow.open(map, marker);
-        });
 
-        function setupClickListener(id, types) {
-            var radioButton = document.getElementById(id);
-            radioButton.addEventListener('click', function() {
-                autocomplete.setTypes(types);
+            function setupClickListener(id, types) {
+                var radioButton = document.getElementById(id);
+                radioButton.addEventListener('click', function() {
+                    autocomplete.setTypes(types);
+                });
+            }
+
+            setupClickListener('changetype-all', []);
+            setupClickListener('changetype-address', ['address']);
+            setupClickListener('changetype-establishment', ['establishment']);
+            setupClickListener('changetype-geocode', ['geocode']);
+
+            document.getElementById('use-strict-bounds')
+            .addEventListener('click', function() {
+                autocomplete.setOptions({strictBounds: this.checked});
             });
-        }
-
-        setupClickListener('changetype-all', []);
-        setupClickListener('changetype-address', ['address']);
-        setupClickListener('changetype-establishment', ['establishment']);
-        setupClickListener('changetype-geocode', ['geocode']);
-
-        document.getElementById('use-strict-bounds')
-        .addEventListener('click', function() {
-            autocomplete.setOptions({strictBounds: this.checked});
         });
-
-        
     }
 
     var measureModal = document.getElementById("measureModal");
@@ -316,6 +310,8 @@
                     position: google.maps.ControlPosition.TOP_RIGHT
                 },
                 gestureHandling: 'greedy',
+                minZoom: 13,
+                maxZoom: 21,
                 zoom: 21
             });
 
@@ -361,6 +357,8 @@
 
         var mapOptions = {
             zoom: 21,
+            minZoom: 13,
+            maxZoom: 21,
             center: {
                 lat: near_lat,
                 lng: near_lng
@@ -404,11 +402,13 @@
         });
 
         if ($("#selectmap").val() == "google") {
+            $(".select2-selection--single").prepend('<img id="google-img" style="width: 22px; display: inline-block; position: absolute; top: 2px; left: 2px;" src="/bower_components/AdminLTE/dist/img/google.png" />')
             $("#type").val("google");
             $("#near-body").css({
                 'display': 'none'
             });
         } else {
+            $(".select2-selection--single").prepend('<img id="near-img" style="width: 22px; display: inline-block; position: absolute; top: 2px; left: 2px;" src="/bower_components/AdminLTE/dist/img/near.png" />')
             $("#type").val("near");
             $("#google-body").css({
                 'display': 'none'
@@ -433,21 +433,30 @@
     }); 
 
     function makeScaleGoogle() {
-        let zoom = google_map.getZoom();
-        $("#range").val(zoom);
-        let scale = 156543.03392 * Math.cos(google_map.getCenter().lat() * Math.PI / 180) / Math.pow(2, zoom);
+        var zoom = google_map.getZoom();
 
-        let minScale = Math.floor(scale * minScaleWidth);
-        let maxScale = Math.ceil(scale * maxScaleWidth);
-        for (var i = 0; i < scaleValues.length; i++) {
-            if (i !== scaleValues.length - 1) {
-                if (((minScale <= scaleValues[i].val) && (scaleValues[i].val <= maxScale)) || ((minScale > scaleValues[i].val) && (maxScale) < scaleValues[i + 1].val)) {
+        if (zoom > 21) {
+            $("#plus").addClass('disable');
+            return;
+        } else if (zoom < 13) {
+            $("#minus").addClass('disable');
+            return;
+        } else {
+            $("#range").val(zoom);
+            let scale = 156543.03392 * Math.cos(google_map.getCenter().lat() * Math.PI / 180) / Math.pow(2, zoom);
+
+            let minScale = Math.floor(scale * minScaleWidth);
+            let maxScale = Math.ceil(scale * maxScaleWidth);
+            for (var i = 0; i < scaleValues.length; i++) {
+                if (i !== scaleValues.length - 1) {
+                    if (((minScale <= scaleValues[i].val) && (scaleValues[i].val <= maxScale)) || ((minScale > scaleValues[i].val) && (maxScale) < scaleValues[i + 1].val)) {
+                        setScaleValuesGoogle(scale, scaleValues[i]);
+                        break;
+                    }
+                } else {
                     setScaleValuesGoogle(scale, scaleValues[i]);
-                    break;
                 }
-            } else {
-                setScaleValuesGoogle(scale, scaleValues[i]);
-            }
+            }    
         }
     }
 
@@ -458,38 +467,46 @@
 
         coordinate = google_lat + ',' + google_lng + "," + google_map.getZoom() + "," + scaleWidth + "," + values.dspVal;
 
-        console.log(coordinate);
         $("#coordinate").val(coordinate);
     }
 
     function makeScaleNear() {
-        let zoom = near_map.getZoom();
-        $("#range").val(zoom);
-        let scale = 156543.03392 * Math.cos(near_map.getCenter().lat() * Math.PI / 180) / Math.pow(2, zoom);
+        var zoom = near_map.getZoom();
 
-        let minScale = Math.floor(scale * minScaleWidth);
-        let maxScale = Math.ceil(scale * maxScaleWidth);
-        for (var i = 0; i < scaleValues.length; i++) {
-            if (i !== scaleValues.length - 1) {
-                if (((minScale <= scaleValues[i].val) && (scaleValues[i].val <= maxScale)) || ((minScale > scaleValues[i].val) && (maxScale) < scaleValues[i + 1].val)) {
+        if (zoom > 21) {
+            $("#plus").addClass('disable');
+            return;
+        } else if (zoom < 13) {
+            $("#minus").addClass('disable');
+            return;
+        } else {
+            $("#range").val(zoom);
+            let scale = 156543.03392 * Math.cos(near_map.getCenter().lat() * Math.PI / 180) / Math.pow(2, zoom);
 
+            let minScale = Math.floor(scale * minScaleWidth);
+            let maxScale = Math.ceil(scale * maxScaleWidth);
+            for (var i = 0; i < scaleValues.length; i++) {
+                if (i !== scaleValues.length - 1) {
+                    if (((minScale <= scaleValues[i].val) && (scaleValues[i].val <= maxScale)) || ((minScale > scaleValues[i].val) && (maxScale) < scaleValues[i + 1].val)) {
+
+                        setScaleValuesNear(scale, scaleValues[i]);
+
+                        break;
+                    }
+                } else {
                     setScaleValuesNear(scale, scaleValues[i]);
-
-                    break;
                 }
-            } else {
-                setScaleValuesNear(scale, scaleValues[i]);
             }
         }
     }
 
     function setScaleValuesNear(scale, values) {
-        // let scaleWidth = values.val / scale;
-        // document.getElementById('scale-bar').style.width = scaleWidth + 'px';
-        // document.getElementById('scale-value').innerHTML = values.dspVal;
+        let scaleWidth = values.val / scale;
+        document.getElementById('scale-bar').style.width = scaleWidth + 'px';
+        document.getElementById('scale-value').innerHTML = values.dspVal;
 
-        // coordinate = near_lat + ',' + near_lng + "," + near_map.getZoom() + "," + scaleWidth + "," + values.dspVal;
-        // $("#coordinate").val(coordinate);
+        coordinate = near_lat + ',' + near_lng + "," + near_map.getZoom() + "," + scaleWidth + "," + values.dspVal;
+        $("#coordinate").val(coordinate);
     }
 
     function degreesToRadians(deg) {
@@ -632,8 +649,8 @@
             name: name,
             tileSize: new google.maps.Size(tileWidth, tileHeight),
             isPng: true,
-            minZoom: 1,
-            maxZoom: 24,
+            minZoom: 13,
+            maxZoom: 21,
             getTileUrl: function(coord, zoom) {
             coord = rotateTile(coord, zoom, heading);
 
@@ -664,15 +681,16 @@
     function zoomin() {
         var zoom_val = parseInt($("#range").val());
         zoom_val += 1;
-        if ($("#selectmap").val() == "google") {
-            google_map.setZoom(zoom_val);
-        } else {
-            near_map.setZoom(zoom_val);
-        }
 
         if (zoom_val > 21) {
             $("#plus").addClass('disable');
             return;
+        }
+
+        if ($("#selectmap").val() == "google") {
+            google_map.setZoom(zoom_val);
+        } else {
+            near_map.setZoom(zoom_val);
         }
 
         $("#range").attr('value', zoom_val);
@@ -681,16 +699,17 @@
     function zoomout() {
         var zoom_val = parseInt($("#range").val());
         zoom_val -= 1;
-        if ($("#selectmap").val() == "google") {
-            google_map.setZoom(zoom_val);
-        } else {
-            near_map.setZoom(zoom_val);   
-        }
 
         if (zoom_val < 13) {
             $("#minus").addClass('disable');
             return;
-        }        
+        }    
+
+        if ($("#selectmap").val() == "google") {
+            google_map.setZoom(zoom_val);
+        } else {
+            near_map.setZoom(zoom_val);   
+        }    
 
         $("#range").attr('value', zoom_val);
     }
@@ -715,6 +734,8 @@
 
     function selectmap() {
         if ($("#selectmap").val() == "google") {
+            $("#near-img").remove();
+            $(".select2-selection--single").prepend('<img id="google-img" style="width: 22px; display: inline-block; position: absolute; top: 2px; left: 2px;" src="/bower_components/AdminLTE/dist/img/google.png" />')
             $("#type").val("google");
             $("#near-body").css({
                 'display': 'none'
@@ -724,6 +745,8 @@
             });
             $("#range").attr('value', 13);
         } else {
+            $("#google-img").remove();
+            $(".select2-selection--single").prepend('<img id="near-img" style="width: 22px; display: inline-block; position: absolute; top: 2px; left: 2px;" src="/bower_components/AdminLTE/dist/img/near.png" />')
             $("#type").val("near");
             $("#google-body").css({
                 'display': 'none'
@@ -733,6 +756,17 @@
             });
             $("#range").attr('value', 13);
         }
+    }
+
+    function showLoading() {
+        Spinner();
+        Spinner.show();
+    }
+
+    function hideLoading() {
+        setTimeout(function(){
+            Spinner.hide();
+        }, 4000);
     }
 
 </script>
