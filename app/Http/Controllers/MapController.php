@@ -108,7 +108,7 @@ class MapController extends Controller
         $unit = explode(" ", $distance)[1];
         $address = $request['address'];
         $type = $request['type'];
-        return view('map/real', ['lat' => $lat, 'lng' => $lng, 'zoom' => $zoom - 1, 'pixel' => $pixel, 'distance' => $distance_num, 'unit' => $unit, 'type' => $type, 'address' => $address]);
+        return view('map/real', ['lat' => $lat, 'lng' => $lng, 'zoom' => $zoom, 'pixel' => $pixel, 'distance' => $distance_num, 'unit' => $unit, 'type' => $type, 'address' => $address]);
     }
 
     public function download(Request $request)
@@ -278,6 +278,12 @@ class MapController extends Controller
         $imageInfo = $data['imageInfo'];
         $Address = $data['Address'];
         $maptype = $data['maptype'];
+        $lat = $data['lat'];
+        $lng = $data['lng'];
+        $pixel = $data['pixel'];
+        $unit = $data['unit'];
+        $distance = $data['distance'];
+
         $lineInfo = $data['lineInfo'];
         $polygonInfo = $data['polygonInfo'];
         $markInfo = $data['markInfo'];
@@ -289,7 +295,12 @@ class MapController extends Controller
                 'userid' => $userId,
                 'image' => $imageInfo,
                 'address' => $Address,
-                'maptype' => $maptype
+                'maptype' => $maptype,
+                'lat' => $lat,
+                'lng' => $lng,
+                'pixel' => $pixel,
+                'unit' => $unit,
+                'distance' => $distance,
             ]);
 
             for ($i = 0; $i < count($lineInfo); $i ++) {
@@ -343,7 +354,12 @@ class MapController extends Controller
                 'userid' => $userId,
                 'image' => $imageInfo,
                 'address' => $Address,
-                'maptype' => $maptype
+                'maptype' => $maptype,
+                'lat' => $lat,
+                'lng' => $lng,
+                'pixel' => $pixel,
+                'unit' => $unit,
+                'distance' => $distance,
             ]);
 
             for ($i = 0; $i < count($lineInfo); $i ++) {

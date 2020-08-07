@@ -19,6 +19,11 @@ class CreateMapsTable extends Migration
             $table->string('image');
             $table->string('address');
             $table->string('maptype');
+            $table->string('lat');
+            $table->string('lng');
+            $table->string('pixel');
+            $table->string('distance');
+            $table->string('unit');
             $table->rememberToken();
             $table->softDeletes();
             $table->timestamps();
