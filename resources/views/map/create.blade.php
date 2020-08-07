@@ -34,16 +34,16 @@
                 <h3 style="color: #fff; padding-top: 0px">Set the Scale for Your Image</h3>
             </div>
             <div class="model-body">
-                <div class="col-md-7" id="google-body" style="padding-right: 0px">
-                    <div class="col-md-12" id="google-map" style="height: 245px">
+                <div class="col-md-7" id="google-body">
+                    <div class="col-md-12" id="google-map">
                     </div>
                     <div id="scale" style="display: none;">
                         <div id="scale-value"></div>
                         <div id="scale-bar"></div>
                     </div>
                 </div>
-                <div class="col-md-7" id="near-body" style="padding-right: 0px; display: none;">
-                    <div class="col-md-12" id="near-map" style="height: 245px">
+                <div class="col-md-7" id="near-body">
+                    <div class="col-md-12" id="near-map">
                     </div>
                     <div id="scale" style="display: none;">
                         <div id="scale-value"></div>

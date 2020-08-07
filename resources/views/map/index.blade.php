@@ -18,6 +18,13 @@
                 <input type="checkbox" name="" class="float-right" style="margin-right: 5px; margin-top: 7px;">
             </div>
         </div>
+        <form id="form" class="form-horizontal" role="form" method="POST" action="{{ route('map.real') }}">
+            <input type="hidden" id="coordinate" name="coordinate">
+            <input type="hidden" id="type" name="type">
+            <input type="hidden" id="address" name="address">
+            <input type="hidden" id="mapid" name="mapid">
+            {{ csrf_field() }}
+        </form>
     </div>
     <div class="box-body">
         <div id="measurements" class="dataTables_wrapper form-inline dt-bootstrap">
@@ -40,7 +47,7 @@
                             @foreach ($maps as $map)
                             <tr role="row" class="odd">
                                 <td tabindex="9" class="" style="text-align: center;">
-                                    <button type="button" class="btn-icon btn btn btn-link" style="color: #9c9c9d" onclick="edit()">
+                                    <button type="button" class="btn-icon btn btn btn-link" style="color: #9c9c9d" onclick="edit('{{ $map->id }}')">
                                         <i class="fa fa-edit" style="font-size: 18px;"></i>
                                         <div class="full-text flex align-center">
                                         </div>
@@ -49,7 +56,7 @@
                                 <td class="table-cell">{{ $map->maptype }}</td>
                                 <td class="table-cell">Me</td>
                                 <td tabindex="9" class="" style="text-align: center;">
-                                    <button type="button" class="btn-icon btn btn btn-link" style="color: #9c9c9d" onclick="edit()">
+                                    <button type="button" class="btn-icon btn btn btn-link" style="color: #9c9c9d" onclick="edit('{{ $map->id }}')">
                                         <div class="full-text flex align-center">
                                             {{ $map->address }}
                                         </div>
@@ -88,7 +95,33 @@
     <script src="{{ asset('js/loading-spinner.js') }}"></script>
     <script type="text/javascript">
         function edit(id) {
-            console.log(id);
+            var token = '{{csrf_field()}}'.split('value="');
+            token = token[1].split('">');
+
+            $.ajax({
+                url: '/map/getmap',
+                type: 'post',
+                data: {   
+                    _token: token[0],
+                    mapId: id
+                },
+                success: function(res) {
+                    var res = JSON.parse(res);
+                    if (res.maptype == "Google") {
+                        var zoom = res.image.split("zoom=")[1].split("&size")[0];
+                        $("#type").val("google");
+                    } else {
+                        var zoom = res.image.split("zoom=")[1].split("&httpauth")[0];
+                        $("#type").val("near");
+                    }
+                    
+                    var coordinate = res.lat + ',' + res.lng + "," + zoom + "," + res.pixel + "," + res.distance + " " + res.unit;
+                    $("#coordinate").val(coordinate);
+                    $("#address").val(res.address);
+                    $("#mapid").val(res.id);
+                    $("#form").submit();
+                }
+            });
         }
 
         function remove(id) {

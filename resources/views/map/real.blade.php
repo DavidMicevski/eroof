@@ -532,6 +532,7 @@
         distance = distance * 1000;
     }
     var type = "{{$type}}";
+    var mapId = "{{$mapId}}"
     var pixelInchRatio = distance * 39.3701 / pixel, pixelInchRatio1 = distance * 39.3701 / pixel;
 
     var degree = 0, pitchVal = 0;
@@ -581,6 +582,8 @@
 
     $(document).ready(function() {
         showLoading();
+        if (mapId != 0)
+            getMap(mapId);
         $('#address').text('{{$address}}');
         if (type == "google") {
             map = L.map('map', {
@@ -7519,7 +7522,7 @@
                 if (polygon.templabelMarkers == undefined)
                     polygon.templabelMarkers = [];
 
-                polygon.setStyle({fillColor: 'transparent'});
+                polygon.setStyle({fillColor: 'transparent', opacity: 1});
                 polygon.editing.enable();
                 polygon.addTo(map);
                 polygon.index = i;
@@ -7582,7 +7585,7 @@
                 if (polygon.templabelMarkers == undefined)
                     polygon.templabelMarkers = [];
 
-                polygon.setStyle({fillColor: 'transparent'});
+                polygon.setStyle({fillColor: 'transparent', opacity: 1});
                 polygon.editing.enable();
                 polygon.addTo(map);
                 polygon.index = i;
@@ -7644,7 +7647,7 @@
                 if (polygon.templabelMarkers == undefined)
                     polygon.templabelMarkers = [];
 
-                polygon.setStyle({fillColor: 'transparent'});
+                polygon.setStyle({fillColor: 'transparent', opacity: 1});
                 polygon.editing.enable();
                 polygon.addTo(map);
                 polygon.index = i;
@@ -7706,7 +7709,7 @@
 
                 if (polygon.templabelMarkers == undefined)
                     polygon.templabelMarkers = [];
-                polygon.setStyle({fillColor: 'transparent'});
+                polygon.setStyle({fillColor: 'transparent', opacity: 1});
                 polygon.editing.enable();
                 polygon.addTo(map);
                 polygon.index = i;
@@ -7768,7 +7771,7 @@
 
                 if (polygon.templabelMarkers == undefined)
                     polygon.templabelMarkers = [];
-                polygon.setStyle({fillColor: 'transparent'});
+                polygon.setStyle({fillColor: 'transparent', opacity: 1});
                 polygon.editing.enable();
                 polygon.addTo(map);
                 polygon.index = i;
@@ -8063,11 +8066,11 @@
             $("#facet-tab").focus();
         }
 
+        $("#totalArea").text(0);
         var polygonArea = 0;
         for (var i = 0; i < mark1.length; i ++) {
             polygonArea += parseInt(mark1[i][mark1[i].length - 1].editing._marker.options.icon.options.html);
         }
-
         $("#totalArea").text(polygonArea);
     }
 
@@ -8090,6 +8093,7 @@
             $("#facet-tab").focus();
         }
 
+        $("#totalArea").text(0);
         var polygonArea = 0;
         for (var i = 0; i < mark2.length; i ++) {
             polygonArea += parseInt(mark2[i][mark2[i].length - 1].editing._marker.options.icon.options.html);
@@ -8117,9 +8121,10 @@
             $("#facet-tab").focus();
         }
 
+        $("#totalArea").text(0);
         var polygonArea = 0;
-        for (var i = 0; i < mark2.length; i ++) {
-            polygonArea += parseInt(mark2[i][mark2[i].length - 1].editing._marker.options.icon.options.html);
+        for (var i = 0; i < mark3.length; i ++) {
+            polygonArea += parseInt(mark3[i][mark3[i].length - 1].editing._marker.options.icon.options.html);
         }
 
         $("#totalArea").text(polygonArea);
@@ -8144,9 +8149,10 @@
             $("#facet-tab").focus();
         }
 
+        $("#totalArea").text(0);
         var polygonArea = 0;
-        for (var i = 0; i < mark2.length; i ++) {
-            polygonArea += parseInt(mark2[i][mark2[i].length - 1].editing._marker.options.icon.options.html);
+        for (var i = 0; i < mark4.length; i ++) {
+            polygonArea += parseInt(mark4[i][mark4[i].length - 1].editing._marker.options.icon.options.html);
         }
 
         $("#totalArea").text(polygonArea);
@@ -8171,9 +8177,10 @@
             $("#facet-tab").focus();
         }
 
+        $("#totalArea").text(0);
         var polygonArea = 0;
-        for (var i = 0; i < mark2.length; i ++) {
-            polygonArea += parseInt(mark2[i][mark2[i].length - 1].editing._marker.options.icon.options.html);
+        for (var i = 0; i < mark5.length; i ++) {
+            polygonArea += parseInt(mark5[i][mark5[i].length - 1].editing._marker.options.icon.options.html);
         }
 
         $("#totalArea").text(polygonArea);
@@ -8295,6 +8302,9 @@
     }
 
     function cancel() {
+    }
+
+    function getMap(id) {
         var token = '{{csrf_field()}}'.split('value="');
         token = token[1].split('">');
         $.ajax({
@@ -8302,8 +8312,10 @@
             type: 'post',
             data: {
                 _token: token[0],
+                mapId: id
             },
             success: function(res) {
+                showLoading();
                 var res = JSON.parse(res);
                 initDraw(res);
             }
@@ -8311,7 +8323,6 @@
     }
 
     function initDraw(data) {
-        console.log(data);
         var markers = data[2];
         var lines = data[3];
         var polygons = data[4];
@@ -8410,8 +8421,14 @@
                 }
             });
             map.on('almost:over', function (e) {
+                $("#map").css({
+                    'cursor' : 'copy'
+                })
             });
             map.on('almost:out', function(e) {
+                $("#map").css({
+                    'cursor' : 'url(../bower_components/AdminLTE/dist/img/non-cross.cur), auto'
+                })
             });
             polyline.pgindex = parseInt(lines[i].pgIdx);
             polyline.index = parseInt(lines[i].index);
@@ -8521,6 +8538,15 @@
                 layer5_polygon.push(polygon);
             }
         }
+
+        var polygonArea = 0;
+        for (var i = 0; i < mark1.length; i ++) {
+            polygonArea += parseInt(mark1[i][mark1[i].length - 1].editing._marker.options.icon.options.html);
+        }
+
+        $("#totalArea").text(polygonArea);
+
+        hideLoading();
     }
 
     function allLayerClick() {
@@ -8550,7 +8576,9 @@
                 layer1_lines[i].addTo(map);
             }
         }
-        var temp_mark1 = [];
+
+        var temp_mark = [];
+        var temp = [];
         for (var j = 0; j < mark1.length; j++) {
             for (var k = 0; k < mark1[j].length; k ++) {
                 if (mark1[j][k].status == 1) {
@@ -8561,12 +8589,19 @@
                             className: 'text-below-marker',
                         })
                     }).addTo(map);
-                    temp_mark1.push(marker);
+                    marker.status = 1;
+                    temp_mark.push(marker);
                 }
+            }   
+            if (temp_mark.length > 0) {
+                temp[j] = temp_mark;
+                temp_mark = [];
             }
         }
-        if (temp_mark1.length > 0)
-            mark1.push(temp_mark1);
+        if (temp.length > 0) {
+            mark1 = [];
+            mark1 = temp;
+        }
 
         //////layer2
         for (var i = 0; i < layer2_lines.length; i ++) {
@@ -8575,7 +8610,8 @@
                 layer2_lines[i].addTo(map);
             }
         }
-        var temp_mark2 = [];
+        temp_mark = [];
+        temp = [];
         for (var j = 0; j < mark2.length; j++) {
             for (var k = 0; k < mark2[j].length; k ++) {
                 if (mark2[j][k].status == 1) {
@@ -8586,12 +8622,19 @@
                             className: 'text-below-marker',
                         })
                     }).addTo(map);
+                    marker.status = 1;
                     temp_mark2.push(marker);
                 }
             }
+            if (temp_mark.length > 0) {
+                temp[j] = temp_mark;
+                temp_mark = [];
+            }
         }
-        if (temp_mark2.length > 0)
-            mark2.push(temp_mark2);
+        if (temp_mark.length > 0) {
+            mark2 = [];
+            mark2 = temp_mark;
+        }
 
         //////layer3
         for (var i = 0; i < layer3_lines.length; i ++) {
@@ -8600,7 +8643,8 @@
                 layer3_lines[i].addTo(map);
             }
         }
-        var temp_mark3 = [];
+        temp_mark = [];
+        temp = [];
         for (var j = 0; j < mark3.length; j++) {
             for (var k = 0; k < mark3[j].length; k ++) {
                 if (mark3[j][k].status == 1) {
@@ -8611,12 +8655,19 @@
                             className: 'text-below-marker',
                         })
                     }).addTo(map);
-                    temp_mark3.push(marker);
+                    marker.status = 1;
+                    temp_mark.push(marker);
                 }
             }
+            if (temp_mark.length > 0) {
+                temp[j] = temp_mark;
+                temp_mark = [];
+            }
         }
-        if (temp_mark3.length > 0)
-            mark3.push(temp_mark3);
+        if (temp_mark.length > 0) {
+            mark3 = [];
+            mark3 = temp_mark;
+        }
 
         //////layer4
         for (var i = 0; i < layer4_lines.length; i ++) {
@@ -8625,7 +8676,8 @@
                 layer4_lines[i].addTo(map);
             }
         }
-        var temp_mark4 = [];
+        temp_mark = [];
+        temp = [];
         for (var j = 0; j < mark4.length; j++) {
             for (var k = 0; k < mark4[j].length; k ++) {
                 if (mark4[j][k].status == 1) {
@@ -8636,12 +8688,19 @@
                             className: 'text-below-marker',
                         })
                     }).addTo(map);
-                    temp_mark4.push(marker);
+                    marker.status = 1;
+                    temp_mark.push(marker);
                 }
             }
+            if (temp_mark.length > 0) {
+                temp[j] = temp_mark;
+                temp_mark = [];
+            }
         }
-        if (temp_mark4.length > 0)
-            mark4.push(temp_mark4);
+        if (temp_mark.length > 0) {
+            mark4 = [];
+            mark4 = temp_mark;
+        }
 
         //////layer5
         for (var i = 0; i < layer5_lines.length; i ++) {
@@ -8650,7 +8709,8 @@
                 layer5_lines[i].addTo(map);
             }
         }
-        var temp_mark5 = [];
+        temp_mark = [];
+        temp = [];
         for (var j = 0; j < mark5.length; j++) {
             for (var k = 0; k < mark5[j].length; k ++) {
                 if (mark5[j][k].status == 1) {
@@ -8661,12 +8721,19 @@
                             className: 'text-below-marker',
                         })
                     }).addTo(map);
-                    temp_mark5.push(marker);
+                    marker.status = 1;
+                    temp_mark.push(marker);
                 }
             }
+            if (temp_mark.length > 0) {
+                temp[j] = temp_mark;
+                temp_mark = [];
+            }
         }
-        if (temp_mark5.length > 0)
-            mark5.push(temp_mark5);
+        if (temp_mark.length > 0) {
+            mark5 = [];
+            mark5 = temp_mark;
+        }
 
         var polygonArea = 0;
         for (var i = 0; i < mark1.length; i ++) {
@@ -8942,8 +9009,14 @@
                         }
                     });
                     map.on('almost:over', function (e) {
+                        $("#map").css({
+                            'cursor' : 'copy'
+                        })
                     });
                     map.on('almost:out', function(e) {
+                        $("#map").css({
+                            'cursor' : 'url(../bower_components/AdminLTE/dist/img/non-cross.cur), auto'
+                        })
                     });
                     polyline.pgindex = count;
                     polyline.index = j;
@@ -9012,14 +9085,20 @@
                         polyline = L.polyline([layer1[count][j + 1], layer1[count][0]], {color: '#3388ff', opacity: 1, weight: 2}).addTo(map);                         
                         map.almostOver.addLayer(polyline);
                         map.on('almost:click', function(e) {
-                            var layer = e.layer;
+                        var layer = e.layer;
                             if (layer.openPopup) {
                                 layer.fire('click', e);
                             }
                         });
                         map.on('almost:over', function (e) {
+                            $("#map").css({
+                                'cursor' : 'copy'
+                            })
                         });
                         map.on('almost:out', function(e) {
+                            $("#map").css({
+                                'cursor' : 'url(../bower_components/AdminLTE/dist/img/non-cross.cur), auto'
+                            })
                         });
                         polyline.pgindex = count;
                         polyline.index = j + 1;
@@ -9183,10 +9262,20 @@
                     polyline = L.polyline([layer2[count][j], layer2[count][j + 1]], {color: '#3388ff', opacity: 1, weight: 2}).addTo(map);
                     map.almostOver.addLayer(polyline);
                     map.on('almost:click', function(e) {
-                        var layer = e.layer;
+                    var layer = e.layer;
                         if (layer.openPopup) {
                             layer.fire('click', e);
                         }
+                    });
+                    map.on('almost:over', function (e) {
+                        $("#map").css({
+                            'cursor' : 'copy'
+                        })
+                    });
+                    map.on('almost:out', function(e) {
+                        $("#map").css({
+                            'cursor' : 'url(../bower_components/AdminLTE/dist/img/non-cross.cur), auto'
+                        })
                     });
                     polyline.pgindex = count;
                     polyline.index = j;
@@ -9255,10 +9344,20 @@
                         polyline = L.polyline([layer2[count][j + 1], layer2[count][0]], {color: '#3388ff', opacity: 1, weight: 2}).addTo(map);                         
                         map.almostOver.addLayer(polyline);
                         map.on('almost:click', function(e) {
-                            var layer = e.layer;
+                        var layer = e.layer;
                             if (layer.openPopup) {
                                 layer.fire('click', e);
                             }
+                        });
+                        map.on('almost:over', function (e) {
+                            $("#map").css({
+                                'cursor' : 'copy'
+                            })
+                        });
+                        map.on('almost:out', function(e) {
+                            $("#map").css({
+                                'cursor' : 'url(../bower_components/AdminLTE/dist/img/non-cross.cur), auto'
+                            })
                         });
                         polyline.pgindex = count;
                         polyline.index = j + 1;
@@ -9422,10 +9521,20 @@
                     polyline = L.polyline([layer3[count][j], layer3[count][j + 1]], {color: '#3388ff', opacity: 1, weight: 2}).addTo(map);
                     map.almostOver.addLayer(polyline);
                     map.on('almost:click', function(e) {
-                        var layer = e.layer;
+                    var layer = e.layer;
                         if (layer.openPopup) {
                             layer.fire('click', e);
                         }
+                    });
+                    map.on('almost:over', function (e) {
+                        $("#map").css({
+                            'cursor' : 'copy'
+                        })
+                    });
+                    map.on('almost:out', function(e) {
+                        $("#map").css({
+                            'cursor' : 'url(../bower_components/AdminLTE/dist/img/non-cross.cur), auto'
+                        })
                     });
                     polyline.pgindex = count;
                     polyline.index = j;
@@ -9498,6 +9607,16 @@
                             if (layer.openPopup) {
                                 layer.fire('click', e);
                             }
+                        });
+                        map.on('almost:over', function (e) {
+                            $("#map").css({
+                                'cursor' : 'copy'
+                            })
+                        });
+                        map.on('almost:out', function(e) {
+                            $("#map").css({
+                                'cursor' : 'url(../bower_components/AdminLTE/dist/img/non-cross.cur), auto'
+                            })
                         });
                         polyline.pgindex = count;
                         polyline.index = j + 1;
@@ -9666,6 +9785,16 @@
                             layer.fire('click', e);
                         }
                     });
+                    map.on('almost:over', function (e) {
+                        $("#map").css({
+                            'cursor' : 'copy'
+                        })
+                    });
+                    map.on('almost:out', function(e) {
+                        $("#map").css({
+                            'cursor' : 'url(../bower_components/AdminLTE/dist/img/non-cross.cur), auto'
+                        })
+                    });
                     polyline.pgindex = count;
                     polyline.index = j;
                     polyline.status = 1;
@@ -9737,6 +9866,16 @@
                             if (layer.openPopup) {
                                 layer.fire('click', e);
                             }
+                        });
+                        map.on('almost:over', function (e) {
+                            $("#map").css({
+                                'cursor' : 'copy'
+                            })
+                        });
+                        map.on('almost:out', function(e) {
+                            $("#map").css({
+                                'cursor' : 'url(../bower_components/AdminLTE/dist/img/non-cross.cur), auto'
+                            })
                         });
                         polyline.pgindex = count;
                         polyline.index = j + 1;
@@ -9905,6 +10044,16 @@
                             layer.fire('click', e);
                         }
                     });
+                    map.on('almost:over', function (e) {
+                        $("#map").css({
+                            'cursor' : 'copy'
+                        })
+                    });
+                    map.on('almost:out', function(e) {
+                        $("#map").css({
+                            'cursor' : 'url(../bower_components/AdminLTE/dist/img/non-cross.cur), auto'
+                        })
+                    });
                     polyline.pgindex = count;
                     polyline.index = j;
                     polyline.status = 1;
@@ -9976,6 +10125,16 @@
                             if (layer.openPopup) {
                                 layer.fire('click', e);
                             }
+                        });
+                        map.on('almost:over', function (e) {
+                            $("#map").css({
+                                'cursor' : 'copy'
+                            })
+                        });
+                        map.on('almost:out', function(e) {
+                            $("#map").css({
+                                'cursor' : 'url(../bower_components/AdminLTE/dist/img/non-cross.cur), auto'
+                            })
                         });
                         polyline.pgindex = count;
                         polyline.index = j + 1;

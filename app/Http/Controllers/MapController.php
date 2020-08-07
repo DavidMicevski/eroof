@@ -108,7 +108,12 @@ class MapController extends Controller
         $unit = explode(" ", $distance)[1];
         $address = $request['address'];
         $type = $request['type'];
-        return view('map/real', ['lat' => $lat, 'lng' => $lng, 'zoom' => $zoom, 'pixel' => $pixel, 'distance' => $distance_num, 'unit' => $unit, 'type' => $type, 'address' => $address]);
+        $mapId = $request['mapid'];
+
+        if ($mapId == null)
+            return view('map/real', ['lat' => $lat, 'lng' => $lng, 'zoom' => $zoom, 'pixel' => $pixel, 'distance' => $distance_num, 'unit' => $unit, 'type' => $type, 'address' => $address, 'mapId' => 0]);
+        else
+            return view('map/real', ['lat' => $lat, 'lng' => $lng, 'zoom' => $zoom, 'pixel' => $pixel, 'distance' => $distance_num, 'unit' => $unit, 'type' => $type, 'address' => $address, 'mapId' => $mapId]);
     }
 
     public function download(Request $request)
@@ -410,7 +415,7 @@ class MapController extends Controller
 
     public function load(Request $request) 
     {
-        $mapId = 1;
+        $mapId = $request['mapId'];
         $map = Map::find($mapId);
         $address = $map['address'];
         $image = $map['image'];
@@ -533,96 +538,18 @@ class MapController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        $this->validateInput($request);
-         User::create([
-            'username' => $request['username'],
-            'email' => $request['email'],
-            'password' => bcrypt($request['password']),
-            'firstname' => $request['firstname'],
-            'lastname' => $request['lastname']
-        ]);
-
-        return redirect()->intended('/map');
-    }
-
-    /**
      * Display the specified resource.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function getmap(Request $request)
     {
-        //
+        $map_id = $request['mapId'];
+        $mapInfo = Map::where('id', $map_id)->get();
+
+        echo json_encode($mapInfo[0]);
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        $user = User::find($id);
-        // Redirect to user list if updating user wasn't existed
-        if ($user == null || count($user) == 0) {
-            return redirect()->intended('/map');
-        }
-
-        return view('map/edit', ['user' => $user]);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        $user = User::findOrFail($id);
-        $constraints = [
-            'username' => 'required|max:20',
-            'firstname'=> 'required|max:60',
-            'lastname' => 'required|max:60'
-            ];
-        $input = [
-            'username' => $request['username'],
-            'firstname' => $request['firstname'],
-            'lastname' => $request['lastname']
-        ];
-        if ($request['password'] != null && strlen($request['password']) > 0) {
-            $constraints['password'] = 'required|min:6|confirmed';
-            $input['password'] =  bcrypt($request['password']);
-        }
-        $this->validate($request, $constraints);
-        User::where('id', $id)
-            ->update($input);
-        
-        return redirect()->intended('/map');
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        User::where('id', $id)->delete();
-         return redirect()->intended('/map');
-    }
-
     /**
      * Search user from database base on some specific constraints
      *
@@ -639,20 +566,6 @@ class MapController extends Controller
 
        $users = $this->doSearchingQuery($constraints);
        return view('map/index', ['users' => $users, 'searchingVals' => $constraints]);
-    }
-
-    private function doSearchingQuery($constraints) {
-        $query = User::query();
-        $fields = array_keys($constraints);
-        $index = 0;
-        foreach ($constraints as $constraint) {
-            if ($constraint != null) {
-                $query = $query->where( $fields[$index], 'like', '%'.$constraint.'%');
-            }
-
-            $index++;
-        }
-        return $query->paginate(5);
     }
     
     private function validateInput($request) {
