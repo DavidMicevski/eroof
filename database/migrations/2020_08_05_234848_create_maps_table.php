@@ -18,6 +18,7 @@ class CreateMapsTable extends Migration
             $table->string('userid');
             $table->string('image');
             $table->string('address');
+            $table->string('maptype');
             $table->rememberToken();
             $table->softDeletes();
             $table->timestamps();

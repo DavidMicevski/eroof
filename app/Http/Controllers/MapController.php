@@ -39,8 +39,9 @@ class MapController extends Controller
     public function index()
     {
         $users = User::paginate(5);
+        $maps = Map::paginate(5);
 
-        return view('map/index', ['users' => $users]);
+        return view('map/index', ['users' => $users, 'maps' => $maps]);
     }
 
     /**
@@ -276,63 +277,116 @@ class MapController extends Controller
         $userId = $data['userId'];
         $imageInfo = $data['imageInfo'];
         $Address = $data['Address'];
+        $maptype = $data['maptype'];
         $lineInfo = $data['lineInfo'];
         $polygonInfo = $data['polygonInfo'];
         $markInfo = $data['markInfo'];
 
-        Map::query()->truncate();
-        Line::query()->truncate();
-        Polygon::query()->truncate();
-        Mark::query()->truncate();
+        $old_map = Map::where('address', $Address)->where('maptype', $maptype)->get();
 
-        $map = Map::create([
-            'userid' => $userId,
-            'image' => $imageInfo,
-            'address' => $Address
-        ]);
+        if (count($old_map) == 0) {
+            $map = Map::create([
+                'userid' => $userId,
+                'image' => $imageInfo,
+                'address' => $Address,
+                'maptype' => $maptype
+            ]);
 
-        var_dump($polygonInfo);
+            for ($i = 0; $i < count($lineInfo); $i ++) {
+                Line::create([
+                    'map_id' => $map['id'],
+                    'layer_id' => $lineInfo[$i]['layerId'],
+                    'color' => $lineInfo[$i]['color'],
+                    'length' => $lineInfo[$i]['length'],
+                    'pgIdx' => $lineInfo[$i]['pgIdx'],
+                    'status' => $lineInfo[$i]['status'],
+                    'type' => $lineInfo[$i]['type'],
+                    'lat0' => $lineInfo[$i]['pos']['lat0'],
+                    'lng0' => $lineInfo[$i]['pos']['lng0'],
+                    'lat1' => $lineInfo[$i]['pos']['lat1'],
+                    'lng1' => $lineInfo[$i]['pos']['lng1'],
+                    'index' => $lineInfo[$i]['index'],
+                ]);            
+            }
 
-        for ($i = 0; $i < count($lineInfo); $i ++) {
-            Line::create([
-                'map_id' => $map['id'],
-                'layer_id' => $lineInfo[$i]['layerId'],
-                'color' => $lineInfo[$i]['color'],
-                'length' => $lineInfo[$i]['length'],
-                'pgIdx' => $lineInfo[$i]['pgIdx'],
-                'status' => $lineInfo[$i]['status'],
-                'type' => $lineInfo[$i]['type'],
-                'lat0' => $lineInfo[$i]['pos']['lat0'],
-                'lng0' => $lineInfo[$i]['pos']['lng0'],
-                'lat1' => $lineInfo[$i]['pos']['lat1'],
-                'lng1' => $lineInfo[$i]['pos']['lng1'],
-                'index' => $lineInfo[$i]['index'],
-            ]);            
-        }
+            for ($i = 0; $i < count($polygonInfo); $i ++) {
+                Polygon::create([
+                    'map_id' => $map['id'],
+                    'layer_id' => $polygonInfo[$i]['layerId'],
+                    'edindex' => $polygonInfo[$i]['edindex'],
+                    'fillColor' => ($polygonInfo[$i]['fillColor'] == null) ? "" : $polygonInfo[$i]['fillColor'],
+                    'pgIdx' => ($polygonInfo[$i]['pgIdx'] == null) ? "" : $polygonInfo[$i]['pgIdx'],
+                    'pitch' => ($polygonInfo[$i]['pitch'] == null) ? "" : $polygonInfo[$i]['pitch'],
+                    'labelMarkers' => ($polygonInfo[$i]['labelMarkers'] == null) ? "" : $polygonInfo[$i]['labelMarkers'],
+                    'latlngs' => $polygonInfo[$i]['pos']
+                ]);            
+            }
 
-        for ($i = 0; $i < count($polygonInfo); $i ++) {
-            Polygon::create([
-                'map_id' => $map['id'],
-                'layer_id' => $polygonInfo[$i]['layerId'],
-                'edindex' => $polygonInfo[$i]['edindex'],
-                'fillColor' => ($polygonInfo[$i]['fillColor'] == null) ? "" : $polygonInfo[$i]['fillColor'],
-                'pgIdx' => ($polygonInfo[$i]['pgIdx'] == null) ? "" : $polygonInfo[$i]['pgIdx'],
-                'pitch' => ($polygonInfo[$i]['pitch'] == null) ? "" : $polygonInfo[$i]['pitch'],
-                'labelMarkers' => ($polygonInfo[$i]['labelMarkers'] == null) ? "" : $polygonInfo[$i]['labelMarkers'],
-                'latlngs' => $polygonInfo[$i]['pos']
-            ]);            
-        }
+            for ($i = 0; $i < count($markInfo); $i ++) {
+                Mark::create([
+                    'map_id' => $map['id'],
+                    'index' => $markInfo[$i]['index'],
+                    'layer_id' => $markInfo[$i]['layerId'],
+                    'status' => $markInfo[$i]['status'],
+                    'text' => $markInfo[$i]['text'],
+                    'lat' => $markInfo[$i]['pos']['lat'],
+                    'lng' => $markInfo[$i]['pos']['lng'],
+                ]);            
+            }
+        } else {
+            Map::where('id', $old_map[0]['id'])->delete();   
+            Line::where('map_id', $old_map[0]['id'])->delete();   
+            Mark::where('map_id', $old_map[0]['id'])->delete();   
+            Polygon::where('map_id', $old_map[0]['id'])->delete();  
 
-        for ($i = 0; $i < count($markInfo); $i ++) {
-            Mark::create([
-                'map_id' => $map['id'],
-                'index' => $markInfo[$i]['index'],
-                'layer_id' => $markInfo[$i]['layerId'],
-                'status' => $markInfo[$i]['status'],
-                'text' => $markInfo[$i]['text'],
-                'lat' => $markInfo[$i]['pos']['lat'],
-                'lng' => $markInfo[$i]['pos']['lng'],
-            ]);            
+            $map = Map::create([
+                'userid' => $userId,
+                'image' => $imageInfo,
+                'address' => $Address,
+                'maptype' => $maptype
+            ]);
+
+            for ($i = 0; $i < count($lineInfo); $i ++) {
+                Line::create([
+                    'map_id' => $map['id'],
+                    'layer_id' => $lineInfo[$i]['layerId'],
+                    'color' => $lineInfo[$i]['color'],
+                    'length' => $lineInfo[$i]['length'],
+                    'pgIdx' => $lineInfo[$i]['pgIdx'],
+                    'status' => $lineInfo[$i]['status'],
+                    'type' => $lineInfo[$i]['type'],
+                    'lat0' => $lineInfo[$i]['pos']['lat0'],
+                    'lng0' => $lineInfo[$i]['pos']['lng0'],
+                    'lat1' => $lineInfo[$i]['pos']['lat1'],
+                    'lng1' => $lineInfo[$i]['pos']['lng1'],
+                    'index' => $lineInfo[$i]['index'],
+                ]);            
+            }
+
+            for ($i = 0; $i < count($polygonInfo); $i ++) {
+                Polygon::create([
+                    'map_id' => $map['id'],
+                    'layer_id' => $polygonInfo[$i]['layerId'],
+                    'edindex' => $polygonInfo[$i]['edindex'],
+                    'fillColor' => ($polygonInfo[$i]['fillColor'] == null) ? "" : $polygonInfo[$i]['fillColor'],
+                    'pgIdx' => ($polygonInfo[$i]['pgIdx'] == null) ? "" : $polygonInfo[$i]['pgIdx'],
+                    'pitch' => ($polygonInfo[$i]['pitch'] == null) ? "" : $polygonInfo[$i]['pitch'],
+                    'labelMarkers' => ($polygonInfo[$i]['labelMarkers'] == null) ? "" : $polygonInfo[$i]['labelMarkers'],
+                    'latlngs' => $polygonInfo[$i]['pos']
+                ]);            
+            }
+
+            for ($i = 0; $i < count($markInfo); $i ++) {
+                Mark::create([
+                    'map_id' => $map['id'],
+                    'index' => $markInfo[$i]['index'],
+                    'layer_id' => $markInfo[$i]['layerId'],
+                    'status' => $markInfo[$i]['status'],
+                    'text' => $markInfo[$i]['text'],
+                    'lat' => $markInfo[$i]['pos']['lat'],
+                    'lng' => $markInfo[$i]['pos']['lng'],
+                ]);            
+            }
         }
 
         echo json_encode("success");
@@ -449,6 +503,17 @@ class MapController extends Controller
         $results = [$address, $image, $marks, $lines, $polygons];
 
         echo json_encode($results);
+    }
+
+    public function remove(Request $request)
+    {
+        $map_id = $request['mapId'];
+        Map::where('id', $map_id)->delete();   
+        Line::where('map_id', $map_id)->delete();   
+        Mark::where('map_id', $map_id)->delete();   
+        Polygon::where('map_id', $map_id)->delete();   
+
+        echo json_encode("success");
     }
 
     /**

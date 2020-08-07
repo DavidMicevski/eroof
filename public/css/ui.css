@@ -1,3 +1,7 @@
+#map {
+	cursor: url(../bower_components/AdminLTE/dist/img/non-cross.cur), auto;
+}
+
 .position-relative {
 	position: relative!important
 }

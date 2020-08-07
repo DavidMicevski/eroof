@@ -591,8 +591,8 @@
             });
             map.doubleClickZoom.disable();
             var bounds = [[0, 0], [1300, 1300]];
-            var filePath = "https://maps.googleapis.com/maps/api/staticmap?center={{$lat}},{{$lng}}&zoom={{$zoom}}&size=800x600&maptype=satellite&key={{env('GOOGLE_IMAGE_KEY')}}";
-            $("#top_image").val("https://maps.googleapis.com/maps/api/staticmap?center={{$lat}},{{$lng}}&zoom={{$zoom}}&size=800x600&maptype=satellite&key={{env('GOOGLE_IMAGE_KEY')}}");
+            var filePath = "https://maps.googleapis.com/maps/api/staticmap?center={{$lat}},{{$lng}}&zoom={{$zoom}}&size=600x400&maptype=satellite&key={{env('GOOGLE_IMAGE_KEY')}}";
+            $("#top_image").val("https://maps.googleapis.com/maps/api/staticmap?center={{$lat}},{{$lng}}&zoom={{$zoom}}&size=600x400&maptype=satellite&key={{env('GOOGLE_IMAGE_KEY')}}");
         } else if (type == "near") {
             map = L.map('map', {
                 editable: true, 
@@ -603,6 +603,7 @@
             map.doubleClickZoom.disable();
             var bounds = [[0, 0], [1280, 1024]];
             var filePath = "http://us0.nearmap.com/staticmap?center={{$lat}},{{$lng}}&size=800x600&zoom={{$zoom}}&httpauth=false&apikey={{env('NEAR_KEY')}}";
+            $("#top_image").val("http://us0.nearmap.com/staticmap?center={{$lat}},{{$lng}}&size=800x600&zoom={{$zoom}}&httpauth=false&apikey={{env('NEAR_KEY')}}");
         }
 
         var image = L.imageOverlay(filePath, bounds).addTo(map);
@@ -847,8 +848,14 @@
                         }
                     });
                     map.on('almost:over', function (e) {
+                        $("#map").css({
+                            'cursor' : 'copy'
+                        })
                     });
                     map.on('almost:out', function(e) {
+                        $("#map").css({
+                            'cursor' : 'url(../bower_components/AdminLTE/dist/img/non-cross.cur), auto'
+                        })
                     });
                     polyline.pgindex = count;
                     polyline.index = j;
@@ -923,8 +930,14 @@
                             }
                         });
                         map.on('almost:over', function (e) {
+                            $("#map").css({
+                                'cursor' : 'copy'
+                            })
                         });
                         map.on('almost:out', function(e) {
+                            $("#map").css({
+                                'cursor' : 'url(../bower_components/AdminLTE/dist/img/non-cross.cur), auto'
+                            })
                         });
                         polyline.pgindex = count;
                         polyline.index = j + 1;
@@ -1093,6 +1106,16 @@
                             layer.fire('click', e);
                         }
                     });
+                    map.on('almost:over', function (e) {
+                        $("#map").css({
+                            'cursor' : 'copy'
+                        })
+                    });
+                    map.on('almost:out', function(e) {
+                        $("#map").css({
+                            'cursor' : 'url(../bower_components/AdminLTE/dist/img/non-cross.cur), auto'
+                        })
+                    });
                     polyline.pgindex = count;
                     polyline.index = j;
                     polyline.status = 1;
@@ -1164,6 +1187,16 @@
                             if (layer.openPopup) {
                                 layer.fire('click', e);
                             }
+                        });
+                        map.on('almost:over', function (e) {
+                            $("#map").css({
+                                'cursor' : 'copy'
+                            })
+                        });
+                        map.on('almost:out', function(e) {
+                            $("#map").css({
+                                'cursor' : 'url(../bower_components/AdminLTE/dist/img/non-cross.cur), auto'
+                            })
                         });
                         polyline.pgindex = count;
                         polyline.index = j + 1;
@@ -1332,6 +1365,16 @@
                             layer.fire('click', e);
                         }
                     });
+                    map.on('almost:over', function (e) {
+                        $("#map").css({
+                            'cursor' : 'copy'
+                        })
+                    });
+                    map.on('almost:out', function(e) {
+                        $("#map").css({
+                            'cursor' : 'url(../bower_components/AdminLTE/dist/img/non-cross.cur), auto'
+                        })
+                    });
                     polyline.pgindex = count;
                     polyline.index = j;
                     polyline.status = 1;
@@ -1403,6 +1446,16 @@
                             if (layer.openPopup) {
                                 layer.fire('click', e);
                             }
+                        });
+                        map.on('almost:over', function (e) {
+                            $("#map").css({
+                                'cursor' : 'copy'
+                            })
+                        });
+                        map.on('almost:out', function(e) {
+                            $("#map").css({
+                                'cursor' : 'url(../bower_components/AdminLTE/dist/img/non-cross.cur), auto'
+                            })
                         });
                         polyline.pgindex = count;
                         polyline.index = j + 1;
@@ -1571,6 +1624,16 @@
                             layer.fire('click', e);
                         }
                     });
+                    map.on('almost:over', function (e) {
+                        $("#map").css({
+                            'cursor' : 'copy'
+                        })
+                    });
+                    map.on('almost:out', function(e) {
+                        $("#map").css({
+                            'cursor' : 'url(../bower_components/AdminLTE/dist/img/non-cross.cur), auto'
+                        })
+                    });
                     polyline.pgindex = count;
                     polyline.index = j;
                     polyline.status = 1;
@@ -1642,6 +1705,16 @@
                             if (layer.openPopup) {
                                 layer.fire('click', e);
                             }
+                        });
+                        map.on('almost:over', function (e) {
+                            $("#map").css({
+                                'cursor' : 'copy'
+                            })
+                        });
+                        map.on('almost:out', function(e) {
+                            $("#map").css({
+                                'cursor' : 'url(../bower_components/AdminLTE/dist/img/non-cross.cur), auto'
+                            })
                         });
                         polyline.pgindex = count;
                         polyline.index = j + 1;
@@ -1810,6 +1883,16 @@
                             layer.fire('click', e);
                         }
                     });
+                    map.on('almost:over', function (e) {
+                        $("#map").css({
+                            'cursor' : 'copy'
+                        })
+                    });
+                    map.on('almost:out', function(e) {
+                        $("#map").css({
+                            'cursor' : 'url(../bower_components/AdminLTE/dist/img/non-cross.cur), auto'
+                        })
+                    });
                     polyline.pgindex = count;
                     polyline.index = j;
                     polyline.status = 1;
@@ -1881,6 +1964,16 @@
                             if (layer.openPopup) {
                                 layer.fire('click', e);
                             }
+                        });
+                        map.on('almost:over', function (e) {
+                            $("#map").css({
+                                'cursor' : 'copy'
+                            })
+                        });
+                        map.on('almost:out', function(e) {
+                            $("#map").css({
+                                'cursor' : 'url(../bower_components/AdminLTE/dist/img/non-cross.cur), auto'
+                            })
                         });
                         polyline.pgindex = count;
                         polyline.index = j + 1;
@@ -2676,7 +2769,6 @@
     }
 
     function createImage() {
-        showLoading();
         var svg = $("#my-svg");
         svg.attr('width', 1592);
         svg.attr('height', 896);
@@ -7970,6 +8062,13 @@
             $("#facet-tab").click();
             $("#facet-tab").focus();
         }
+
+        var polygonArea = 0;
+        for (var i = 0; i < mark1.length; i ++) {
+            polygonArea += parseInt(mark1[i][mark1[i].length - 1].editing._marker.options.icon.options.html);
+        }
+
+        $("#totalArea").text(polygonArea);
     }
 
     function layer2_click() {
@@ -7990,6 +8089,13 @@
             $("#facet-tab").click();
             $("#facet-tab").focus();
         }
+
+        var polygonArea = 0;
+        for (var i = 0; i < mark2.length; i ++) {
+            polygonArea += parseInt(mark2[i][mark2[i].length - 1].editing._marker.options.icon.options.html);
+        }
+
+        $("#totalArea").text(polygonArea);
     }
 
     function layer3_click() {
@@ -8010,6 +8116,13 @@
             $("#facet-tab").click();
             $("#facet-tab").focus();
         }
+
+        var polygonArea = 0;
+        for (var i = 0; i < mark2.length; i ++) {
+            polygonArea += parseInt(mark2[i][mark2[i].length - 1].editing._marker.options.icon.options.html);
+        }
+
+        $("#totalArea").text(polygonArea);
     }
 
     function layer4_click() {
@@ -8030,6 +8143,13 @@
             $("#facet-tab").click();
             $("#facet-tab").focus();
         }
+
+        var polygonArea = 0;
+        for (var i = 0; i < mark2.length; i ++) {
+            polygonArea += parseInt(mark2[i][mark2[i].length - 1].editing._marker.options.icon.options.html);
+        }
+
+        $("#totalArea").text(polygonArea);
     }
 
     function layer5_click() {
@@ -8050,6 +8170,13 @@
             $("#facet-tab").click();
             $("#facet-tab").focus();
         }
+
+        var polygonArea = 0;
+        for (var i = 0; i < mark2.length; i ++) {
+            polygonArea += parseInt(mark2[i][mark2[i].length - 1].editing._marker.options.icon.options.html);
+        }
+
+        $("#totalArea").text(polygonArea);
     }
 
     function showLoading() {
@@ -8140,6 +8267,7 @@
             userId: '{{ Auth::user()->id }}',
             imageInfo: $("#top_image").val(),
             Address: '{{$address}}',
+            maptype: (type == 'google' ? 'Google' : 'Near'),
             lineInfo: lineInfo,
             polygonInfo: polygonInfo,
             markInfo: markInfo
@@ -8534,6 +8662,30 @@
         }
         if (temp_mark5.length > 0)
             mark5.push(temp_mark5);
+
+        var polygonArea = 0;
+        for (var i = 0; i < mark1.length; i ++) {
+            polygonArea += parseInt(mark1[i][mark1[i].length - 1].editing._marker.options.icon.options.html);
+        }
+
+        for (var i = 0; i < mark2.length; i ++) {
+            polygonArea += parseInt(mark2[i][mark2[i].length - 1].editing._marker.options.icon.options.html);
+        }
+
+        for (var i = 0; i < mark3.length; i ++) {
+            polygonArea += parseInt(mark3[i][mark3[i].length - 1].editing._marker.options.icon.options.html);
+        }
+
+        for (var i = 0; i < mark4.length; i ++) {
+            polygonArea += parseInt(mark4[i][mark4[i].length - 1].editing._marker.options.icon.options.html);
+        }
+
+        for (var i = 0; i < mark5.length; i ++) {
+            polygonArea += parseInt(mark5[i][mark5[i].length - 1].editing._marker.options.icon.options.html);
+        }
+
+        $("#totalArea").text(polygonArea);
+        
     }
 
     function drawLine() {
