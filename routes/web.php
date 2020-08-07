@@ -11,9 +11,13 @@
 |
 */
 
-Route::get('/', function () {
+Route::get('/login', function () {
     return view('/dashboard');
 })->middleware('auth');
+
+Route::get('/', function () {
+    return view('/landing');
+});
 
 Auth::routes();
 

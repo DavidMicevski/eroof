@@ -19,7 +19,6 @@
     <link href="{{ asset('css/leaflet.css') }}" rel="stylesheet">
     <link href="{{ asset('css/select2.css') }}" rel="stylesheet">
     <link href="{{ asset('css/leaflet.draw.css') }}" rel="stylesheet">
-    <link href="{{ asset('css/L.Grid.css') }}" rel="stylesheet">
   </head>
   
   <body class="hold-transition skin-blue sidebar-mini">

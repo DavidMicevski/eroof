@@ -38,10 +38,14 @@ class MapController extends Controller
      */
     public function index()
     {
-        $users = User::paginate(5);
         $maps = Map::paginate(5);
 
-        return view('map/index', ['users' => $users, 'maps' => $maps]);
+        for ($i = 0; $i < count($maps); $i ++) {
+            $user = User::where('id', $maps[$i]['userid'])->get();
+            $maps[$i]['username'] = $user[0]['username'];
+        }
+
+        return view('map/index', ['maps' => $maps]);
     }
 
     /**

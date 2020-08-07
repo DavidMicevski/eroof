@@ -61,6 +61,6 @@
     $('#undo-redo').height(height - 1);
   });
 </script>
-<form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+<form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: block;">
   {{ csrf_field() }}
 </form>

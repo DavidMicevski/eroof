@@ -54,7 +54,7 @@
                                     </button>
                                 </td>
                                 <td class="table-cell">{{ $map->maptype }}</td>
-                                <td class="table-cell">Me</td>
+                                <td class="table-cell">{{ $map->username }}</td>
                                 <td tabindex="9" class="" style="text-align: center;">
                                     <button type="button" class="btn-icon btn btn btn-link" style="color: #9c9c9d" onclick="edit('{{ $map->id }}')">
                                         <div class="full-text flex align-center">
@@ -62,7 +62,7 @@
                                         </div>
                                     </button>
                                 </td>
-                                <td class="table-cell">Me</td>
+                                <td class="table-cell">{{ $map->username }}</td>
                                 <td tabindex="9" class="" style="text-align: center;">
                                     <button type="button" class="btn-icon btn btn btn-link" style="color: #9c9c9d" onclick="download()">
                                         <i class="fa fa-file-pdf-o" style="font-size: 18px;"></i>

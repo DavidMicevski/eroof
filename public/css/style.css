@@ -1,0 +1,329 @@
+html {
+  scroll-behavior: smooth;
+}
+a:hover{
+	text-decoration: none;
+	opacity: 0.8;
+}
+.navbar-nav.mr-auto .nav-item {
+    padding-left: 30px;
+}
+.site-header {
+    padding-top: 10px;
+    box-shadow: 0px 5px 7px #3333333d;
+    padding-bottom: 10px;
+    position: fixed;
+    top: 0px;
+    z-index: 99999;
+    background: white;
+    margin: 0 auto;
+    width: 100%;
+}
+.button-quote .btn {
+    background: #005caa;
+    border: none;
+    color: #fff;
+    padding: 10px 26px;
+    padding-top: 7px;
+}	
+
+.sitelogo {
+    width: 100%;
+}
+.navbar.navbar-expand-lg.navbar-light {
+    /*margin-top: 30px;*/
+    margin-top: 8px;
+}
+
+.main-site-banner {
+    background: url(../bower_components/AdminLTE/dist/img/banner-1.jpg) no-repeat;
+        background-size: auto;
+    padding-top: 180px;
+    padding-bottom: 180px;
+    background-size: cover;
+    /*margin-top: 110px;*/
+    margin-top: 80px;
+}
+
+.main-site-banner h2 {
+    color: #fff;
+    font-size: 40px;
+    font-weight: bold;
+}	
+.main-site-banner p {
+    color: #fff;
+    font-size: 24px;
+}
+
+.main-site-banner a {
+    color: #fff !important;
+    background: #69b123 !important;
+    border: none;
+    padding: 10px 30px;
+}
+.product-item img {
+    width: 100%;
+}
+
+.product-item {
+    border: 1px solid #eee;
+    text-align: center;
+    box-shadow: 1px 5px 7px #00000042;
+    padding-bottom: 15px;
+}
+.product-item H3 {
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 25px;
+    margin-top: 14px;
+    margin-bottom: 5px;
+}
+.product-item .btn {
+    background: #005caa;
+    color: #fff;
+    padding: 9px 20px;
+        padding-top: 9px;
+    border-radius: 25px;
+    padding-top: 6px;
+}
+.our-products h2 {
+    font-weight: bold;
+    display: inline-block;
+    border-bottom: 2px solid #000;
+    padding-bottom: 10px;
+}
+.pricing h2{
+	color: #fff;
+	    display: inline-block;
+    border-bottom: 2px solid #fff;
+    padding-bottom: 10px;
+    font-weight: bold;
+}
+.product-item p {
+    padding: 10px;
+}
+
+
+section.pricing {
+  background: #007bff;
+  background: linear-gradient(to right, #0062E6, #33AEFF);
+}
+.card {
+    position: relative;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+    border: 1px solid rgba(0,0,0,.125);
+    border-radius: .25rem;
+}
+
+.pricing .card {
+  border: none;
+  border-radius: 1rem;
+  transition: all 0.2s;
+  box-shadow: 0 0.5rem 1rem 0 rgba(0, 0, 0, 0.1);
+}
+
+.pricing hr {
+  margin: 1.5rem 0;
+}
+
+.pricing .card-title {
+  margin: 0.5rem 0;
+  font-size: 0.9rem;
+  letter-spacing: .1rem;
+  font-weight: bold;
+}
+
+.pricing .card-price {
+  font-size: 3rem;
+  margin: 0;
+}
+
+.pricing .card-price .period {
+  font-size: 0.8rem;
+}
+
+.pricing ul li {
+  margin-bottom: 1rem;
+}
+
+.pricing .text-muted {
+  opacity: 0.7;
+}
+
+.pricing .btn {
+  font-size: 80%;
+  border-radius: 5rem;
+  letter-spacing: .1rem;
+  font-weight: bold;
+  padding: 1rem;
+  opacity: 0.7;
+  transition: all 0.2s;
+}
+
+/* Hover Effects on Card */
+
+@media (min-width: 992px) {
+  .pricing .card:hover {
+    margin-top: -.25rem;
+    margin-bottom: .25rem;
+    box-shadow: 0 0.5rem 1rem 0 rgba(0, 0, 0, 0.3);
+  }
+  .pricing .card:hover .btn {
+    opacity: 1;
+  }
+}
+
+
+/*contact form*/
+.quote-form {
+    background: #e9f2f1;
+    padding-top: 50px;
+    padding-bottom: 50px;
+}
+
+.contact-form {
+    background: #fff;
+    margin-top: 3%;
+    margin-bottom: 0%;
+    width: 80%;
+}
+.contact-form .form-control{
+    border-radius:1rem;
+}
+.contact-image{
+    text-align: center;
+}
+.contact-image img{
+    border-radius: 6rem;
+    width: 11%;
+    margin-top: -3%;
+    transform: rotate(29deg);
+}
+.contact-form form {
+    padding: 90px 20px;
+}
+.contact-form form .row{
+    margin-bottom: -7%;
+}
+.contact-form h3 {
+    margin-bottom: 2%;
+    margin-top: -10%;
+    text-align: center;
+    color: #0062cc;
+}
+form p {
+    text-align: center;
+}
+.contact-form .btnContact {
+    width: 220px;
+    border: none;
+    padding: 2.5%;
+    background: #005caa;
+    font-weight: 600;
+    color: #fff;
+    cursor: pointer;
+    padding-top: 10px;
+    padding-bottom: 13px;
+    border-radius: 25px;
+}
+.btnContactSubmit
+{
+    width: 50%;
+    border-radius: 1rem;
+    padding: 1.5%;
+    color: #fff;
+    background-color: #0062cc;
+    border: none;
+    cursor: pointer;
+}
+
+.strip-footer {
+    background: #005caa;
+    color: #FFF;
+}
+.page-footer {
+    background: #2b2b2b;
+}
+.text-uppercase {
+    color: #fff;
+}
+.deep-purple {
+    color: #fff;
+    background: white;
+}
+footer a {
+    color: #fff;
+}
+footer p {
+    color: #fff;
+}
+.footer-copyright {
+    background: #000;
+    color: #fff;
+}
+
+.fb-ic {
+    color: #fff;
+    background: #fff;
+    padding: 3px 9px;
+    color: #000;
+    border-radius: 15px;
+    width: 30px;
+    height: 30px;
+    display: inline-block;
+    position: relative;
+    text-align: center;
+}
+
+.explore-item {
+    text-align: center;
+    padding: 10px;
+    box-shadow: 0px 5px 10px #0000002b;
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+.explore-item img {
+    margin-bottom: 15px;
+}
+.explore h2 {
+    font-weight: bold;
+    border-bottom: 2px solid #000;
+    display: inline-block;
+    padding-bottom: 9px;
+    margin-bottom: 15px;
+}
+
+
+/*media quiries*/
+@media(max-width: 991px){
+.button-quote {
+    float: right;
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+#navbarSupportedContent {
+    position: absolute;
+    top: 62px;
+    background: white;
+    width: 200px;
+    border-radius: 1px;
+    box-shadow: 0px 10px 10px #0000004f;
+}
+.main-site-banner{
+	padding-bottom: 80px;
+}
+}
+
+@media(max-width: 400px){
+.contact-image img {
+    margin-top: -10%;
+}
+}
