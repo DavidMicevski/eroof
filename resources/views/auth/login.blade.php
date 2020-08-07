@@ -53,7 +53,10 @@
                                 <button type="submit" class="btn btn-primary">
                                     Login
                                 </button>
-                                <a href="register">Register</a>
+                                <button type="button" class="btn btn-primary" onclick="register()">
+                                    Register
+                                </button>
+                                <!-- <a href="register">Register</a> -->
 
                                 <a class="btn btn-link" href="{{ route('password.request') }}">
                                     Forgot Your Password?
@@ -66,4 +69,9 @@
         </div>
     </div>
 </div>
+<script type="text/javascript">
+    function register() {
+        location.href = "register";
+    }
+</script>
 @endsection

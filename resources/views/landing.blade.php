@@ -3,25 +3,49 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="theme-color" content="#fafafa">
         <title>Roof Ruler</title>
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-        <link href="{{ asset("/bower_components/AdminLTE/bootstrap/css/bootstrap.min.css") }}" rel="stylesheet" type="text/css" />
-        <link rel="shortcut icon" href="{{ asset("/bower_components/AdminLTE/dist/img/icon.png") }}" type="image/x-icon"/>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
-        <link href="{{ asset("/bower_components/AdminLTE/plugins/datatables/dataTables.bootstrap.css")}}" rel="stylesheet" type="text/css" />
-        <link href="{{ asset("/bower_components/AdminLTE/plugins/daterangepicker/daterangepicker.css")}}" rel="stylesheet" type="text/css" />
-        <link href="{{ asset("/bower_components/AdminLTE/plugins/datepicker/datepicker3.css")}}" rel="stylesheet" type="text/css" />
-        <!-- <link href="{{ asset("/bower_components/AdminLTE/dist/css/AdminLTE.min.css")}}" rel="stylesheet" type="text/css" /> -->
-        <!-- <link href="{{ asset("/bower_components/AdminLTE/dist/css/skins/_all-skins.min.css")}}" rel="stylesheet" type="text/css" /> -->
-        <link href="{{ asset('css/app-template.css') }}" rel="stylesheet">
-        <link href="{{ asset('css/ui.css') }}" rel="stylesheet">
-        <link href="{{ asset('css/leaflet.css') }}" rel="stylesheet">
-        <link href="{{ asset('css/select2.css') }}" rel="stylesheet">
-        <link href="{{ asset('css/leaflet.draw.css') }}" rel="stylesheet">
+
+        <meta property="og:title" content="">
+        <meta property="og:type" content="">
+        <meta property="og:url" content="">
+        <meta property="og:image" content="">
+
+
+        <link id="id-7821f1b0-2c69-4cce-bfcd-de7c6a90e7ac" href="{{ asset("/bower_components/AdminLTE/dist/img/Tab-Icon.png") }}" rel="apple-touch-icon" sizes="114x114">
+
+        <link id="id-1a36c2a7-aeeb-40cb-8128-baa6407c7f80" href="{{ asset("/bower_components/AdminLTE/dist/img/Tab-Icon.png") }}" rel="apple-touch-icon" sizes="120x120">
+
+        <link id="id-cfcd3f02-4459-4b79-a6d2-13d39c92cc11" href="{{ asset("/bower_components/AdminLTE/dist/img/Tab-Icon.png") }}" rel="apple-touch-icon" sizes="144x144">
+
+        <link id="id-a43ac453-eaf8-409f-96f6-fe10e2f9c17a" href="{{ asset("/bower_components/AdminLTE/dist/img/Tab-Icon.png") }}" rel="apple-touch-icon" sizes="152x152">
+
+        <link id="id-24d7582f-7e6d-4238-8ee2-bbd63f0fb576" href="{{ asset("/bower_components/AdminLTE/dist/img/Tab-Icon.png") }}" rel="apple-touch-icon" sizes="180x180">
+
+        <link id="id-fa3162c9-4a25-4209-8d09-021bd0f5e300" href="{{ asset("/bower_components/AdminLTE/dist/img/Tab-Icon.png") }}" rel="apple-touch-icon" sizes="57x57">
+
+        <link id="id-582c1dfb-4c54-4630-b525-6ee1b4356cac" href="{{ asset("/bower_components/AdminLTE/dist/img/Tab-Icon.png") }}" rel="apple-touch-icon" sizes="60x60">
+
+        <link id="id-4e356a9e-f8fc-4f9c-a869-691f75f79c8c" href="{{ asset("/bower_components/AdminLTE/dist/img/Tab-Icon.png") }}" rel="apple-touch-icon" sizes="72x72">
+
+        <link id="id-c09d1127-d35b-4ad0-a572-2d3b4220e21e" href="{{ asset("/bower_components/AdminLTE/dist/img/Tab-Icon.png") }}" rel="apple-touch-icon" sizes="76x76">
+
+        <link id="id-0595bbdb-a863-4250-8dd1-23750b951cc5" href="{{ asset("/bower_components/AdminLTE/dist/img/Tab-Icon.png") }}" rel="icon" sizes="16x16"
+        type="image/png">
+
+        <link id="id-7f42952c-7165-428b-8cc7-f73a17bababf" href="{{ asset("/bower_components/AdminLTE/dist/img/Tab-Icon.png") }}" rel="icon" sizes="32x32"
+        type="image/png">
+
+        <link id="id-4aa4ff60-685c-46c6-b696-1294f9e89f25" href="{{ asset("/bower_components/AdminLTE/dist/img/Tab-Icon.png") }}" rel="icon" sizes="96x96"
+        type="image/png">
+
+        <link rel="manifest" href="site.webmanifest">
+        
+        <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
         <link href="{{ asset('css/style.css') }}" rel="stylesheet">
         <link href="{{ asset('css/font-awesome.css') }}" rel="stylesheet">
+        <link href="{{ asset('css/navbar.css') }}" rel="stylesheet">
+        <meta name="theme-color" content="#fafafa">
     </head>
     <body>
         <header class="site-header">
