@@ -38,20 +38,6 @@
                             </div>
                         </div>
 
-                        <div class="form-group{{ $errors->has('check') ? ' has-error' : '' }}">
-                            <label for="check" class="col-md-4 control-label">Security</label>
-
-                            <div class="col-md-6">
-                                <input id="check" type="text" class="form-control" name="email" value="{{ old('check') }}" required>
-
-                                @if ($errors->has('check'))
-                                    <span class="help-block">
-                                        <strong>{{ $errors->first('check') }}</strong>
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-
                         <div class="form-group{{ $errors->has('password') ? ' has-error' : '' }}">
                             <label for="password" class="col-md-4 control-label">Password</label>
 

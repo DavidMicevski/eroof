@@ -50,6 +50,9 @@
     <body>
         <header class="site-header">
             <div class="container">
+                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                    {{ csrf_field() }}
+                </form>
                 <div class="row">
                     <div class="col-md-3">
                         <a href="#"><img src="{{ asset("/bower_components/AdminLTE/dist/img/logo-main.png") }}" class="sitelogo"></a>
@@ -66,7 +69,6 @@
                                     <li class="nav-item active">
                                         <a class="nav-link" href="index.html">Home <span class="sr-only">(current)</span></a>
                                     </li>
-
                                     <li class="nav-item">
                                         <a class="nav-link" href="#products">Products</a>
                                     </li>
@@ -79,10 +81,14 @@
                                     </li>
                                 </ul>
                             </div>
-
                             <div class="button-quote">
                                 <a href="#contactus" class="btn btn-primary">GET STARTED</a>
-                                <a href="/login" class="btn btn-primary">Login</a>
+                                @if (Auth::check() == 1)
+                                    <a class="btn btn-primary" onclick="logout()">Logout</a>
+                                @endif
+                                @if (Auth::check() == '' || Auth::check() == null)
+                                    <a href="/login" class="btn btn-primary">Login</a>
+                                @endif
                             </div>
                         </nav>
                     </div>
@@ -354,4 +360,9 @@
     <script src="{{ asset ("/bower_components/AdminLTE/plugins/jQuery/jquery-2.2.3.min.js") }}"></script>
     <script src="{{ asset ("/bower_components/AdminLTE/bootstrap/js/bootstrap.min.js") }}" type="text/javascript"></script>
     <script src="{{ asset ("/bower_components/AdminLTE/dist/js/app.min.js") }}" type="text/javascript"></script>
+    <script type="text/javascript">
+        function logout() {
+            $("#logout-form").submit();
+        }
+    </script>
 </html>

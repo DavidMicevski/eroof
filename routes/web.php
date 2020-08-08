@@ -19,6 +19,10 @@ Route::get('/', function () {
     return view('/landing');
 });
 
+Route::get('/verify', function () {
+    return view('/verify');
+});
+
 Auth::routes();
 
 Route::get('/dashboard', 'DashboardController@index');
@@ -34,6 +38,7 @@ Route::post('/map/load', 'MapController@load')->name('map.load');
 Route::post('/map/real', 'MapController@real')->name('map.real');
 Route::post('/map/remove', 'MapController@remove')->name('map.remove');
 Route::post('/map/getmap', 'MapController@getmap')->name('map.getmap');
+Route::post('/map/verifycode', 'MapController@verifycode')->name('map.verifycode');
 Route::post('/map/user_upload', 'MapController@user_upload')->name('map.user_upload');
 Route::post('/map/download', 'MapController@download')->name('map.download');
 Route::resource('map', 'MapController');

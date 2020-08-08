@@ -20,6 +20,8 @@ class CreateUsersTable extends Migration
             $table->string('password');
             $table->string('lastname');
             $table->string('firstname');
+            $table->string('is_verify');
+            $table->string('code');
             $table->rememberToken();
             $table->softDeletes();
             $table->timestamps();

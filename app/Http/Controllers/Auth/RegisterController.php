@@ -6,6 +6,7 @@ use App\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Support\Facades\Mail;
 
 class RegisterController extends Controller
 {
@@ -27,7 +28,7 @@ class RegisterController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/dashboard';
+    protected $redirectTo = '/verify';
 
     /**
      * Create a new controller instance.
@@ -51,7 +52,6 @@ class RegisterController extends Controller
             'username' => 'required|max:255',
             'email' => 'required|email|max:255|unique:users',
             'password' => 'required|min:6|confirmed',
-            'check' => 'required|max:255'
         ]);
     }
 
@@ -68,7 +68,36 @@ class RegisterController extends Controller
             'lastname' => $data['name'],
             'firstname' => $data['name'],
             'email' => $data['email'],
+            'is_verify' => 0,
+            'code' => $data['code'],
             'password' => bcrypt($data['password']),
         ]);
+    }
+
+    protected function makeString()
+    {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'; 
+        $randomString = ''; 
+      
+        for ($i = 0; $i < 6; $i++) { 
+            $index = rand(0, strlen($characters) - 1); 
+            $randomString .= $characters[$index]; 
+        } 
+      
+        return $randomString; 
+    }
+
+    protected function sendMail($toEmail, $code) 
+    {
+        $introLines = [
+            'code' => $code,
+        ];
+        $fromEmail = "no-reply@buscasa.com";
+        $toEmail = "toprudevnik@gmail.com";
+        Mail::send('emails.verifycode', ['introLines'=> $introLines], function($m) use ($toEmail, $fromEmail) {
+            $m->to($toEmail);
+            $m->from($fromEmail);
+            $m->subject('Verify Code!');
+        });
     }
 }

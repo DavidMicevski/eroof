@@ -56,7 +56,6 @@
                                 <button type="button" class="btn btn-primary" onclick="register()">
                                     Register
                                 </button>
-                                <!-- <a href="register">Register</a> -->
 
                                 <a class="btn btn-link" href="{{ route('password.request') }}">
                                     Forgot Your Password?

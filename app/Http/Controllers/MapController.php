@@ -554,6 +554,14 @@ class MapController extends Controller
 
         echo json_encode($mapInfo[0]);
     }
+
+    public function verifycode(Request $request)
+    {
+        exit("123");
+        $userId = $request['id'];
+        $user = User::where('id', $userId)->update('is_verify', 1);
+    }
+
     /**
      * Search user from database base on some specific constraints
      *
@@ -572,13 +580,13 @@ class MapController extends Controller
        return view('map/index', ['users' => $users, 'searchingVals' => $constraints]);
     }
     
-    private function validateInput($request) {
+    private function validate($request) {
         $this->validate($request, [
-        'username' => 'required|max:20',
-        'email' => 'required|email|max:255|unique:users',
-        'password' => 'required|min:6|confirmed',
-        'firstname' => 'required|max:60',
-        'lastname' => 'required|max:60'
-    ]);
+            'username' => 'required|max:20',
+            'email' => 'required|email|max:255|unique:users',
+            'password' => 'required|min:6|confirmed',
+            'firstname' => 'required|max:60',
+            'lastname' => 'required|max:60'
+        ]);
     }
 }
